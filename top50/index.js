@@ -15,7 +15,6 @@ const FONT_WEIGHTS = `
 <option value="900">Black</option>
 `
 
-let apiurl = window.location.href.includes('lcedit.com') ? "https://api.lcedit.com/" : 'http://localhost:1112/';
 let currentIndex = 0;
 let auditTimeout;
 let saveInterval;
@@ -26,6 +25,7 @@ let nextUpdateAudit = false;
 let specificChannels = [];
 let pickingChannels = false;
 let quickSelecting = false;
+let quickSelectSignature = '';
 let odometers = [];
 let iso;
 let data = {};
@@ -228,7 +228,7 @@ async function initLoad(redo, previousTheme) {
         try {
             const oldSave = JSON.parse(oldData);
             oldSave.saveType = COUNTER_THEME;
-            if (confirm('Livecountsedit has upgraded to a better browser storage method. You have old data stored in your browser, would you like to save a backup just in case?')) {
+            if (confirm('PulseCount has upgraded to a better browser storage method. You have old data stored in your browser, would you like to save a backup just in case?')) {
                 const file = new Blob([JSON.stringify(oldSave)], { type: 'text/plain' });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(file);
@@ -253,7 +253,7 @@ async function initLoad(redo, previousTheme) {
                 storedData.partialExports.fireSettings = storedData.partialExports.fireIcons;
                 delete storedData.partialExports.fireIcons;
             }
-            
+
             data = mergeWithExampleData(storedData, example_data);
             data.data = data.data.map(x => new Channel(x));
             data.saveType = COUNTER_THEME;
@@ -262,6 +262,17 @@ async function initLoad(redo, previousTheme) {
             data = structuredClone(example_data);
         }
     }
+
+    data.data.forEach((channel, index) => {
+        if (!channel.id || !channel.id.startsWith('@')) return;
+        if (Number(channel.min_gain) === 0 && Number(channel.max_gain) === 0 && !isFinite(channel.mean_gain)) {
+            channel.min_gain = Math.max(1, Math.round(Number(channel.count) / 220000000));
+            channel.max_gain = channel.min_gain + 2 + (index % 4);
+        }
+        if (!channel.image || channel.image.startsWith('https://yt3.') || channel.image.includes('default.png')) {
+            channel.image = channelAvatar({ ...channel, rank: index + 1 });
+        }
+    });
 
     // Ensure headerSettings exists and filter out undefined items
     if (!data.headerSettings) {
@@ -282,15 +293,15 @@ async function initLoad(redo, previousTheme) {
     }
     // default placement to 'header'
     // rename items with invalid names
-    data.headerSettings.items.forEach(item => { 
-        if (item.placement == null) item.placement = 'header'; 
+    data.headerSettings.items.forEach(item => {
+        if (item.placement == null) item.placement = 'header';
         if (!isValidHeaderName(item.name)) item.name = uuidGen();
     });
 
     // Old difference settings
-    if ('imageEnabled' in data.differenceStyles || 
-        'shakingEnabled' in data.differenceStyles || 
-        'differenceImage' in data.differenceStyles || 
+    if ('imageEnabled' in data.differenceStyles ||
+        'shakingEnabled' in data.differenceStyles ||
+        'differenceImage' in data.differenceStyles ||
         'showDifferenceWhen' in data.differenceStyles ||
         'color' in data.differenceStyles ||
         'differenceThreshold' in data
@@ -505,6 +516,7 @@ async function initLoad(redo, previousTheme) {
         updateInterval = setInterval(update, data.updateInterval);
         update();
     }
+    if (!document.getElementById(data.settingsTab)) data.settingsTab = 'addSettings';
     let element = document.getElementById(data.settingsTab);
     let button = document.getElementById('button_' + data.settingsTab);
     element.classList.remove("hidden");
@@ -516,28 +528,7 @@ async function initLoad(redo, previousTheme) {
         loadDifferenceEffects();
         loadTopSettings();
         afterDrawingMenu();
-        await loadScripts();
-        initScripts();
-        code = data.uuid
-        document.getElementById('connect').innerText = '$(urlfetch ' + apiurl + '' + code + '/$(userid)/$(query)?returnText=Added $(user)!)';
-        document.getElementById('connect2').innerText = '$(urlfetch ' + apiurl + '' + code + '/$(userid)?values=10,20&returnText=$(user) uploaded $(query)!)';
-        document.getElementById('connect3').innerText = '$(urlfetch ' + apiurl + '' + code + '/$(userid)/$(query)?value=edit&returnText=Edited $(user)!)';
-        document.getElementById('connect4').innerText = '$(urlfetch ' + apiurl + '' + code + '/$(userid)/user)';
-        document.getElementById('connect5').innerText = '$(urlfetch ' + apiurl + '' + code + '/$(userid)/gains)';
-        document.getElementById('connect6').innerText = '$(urlfetch ' + apiurl + '' + code + '/$(userid)/rank)';
-        let connected = false;
-        if (window.location.href.includes('?code=')) {
-            code = window.location.href.split('?code=')[1];
-            connected = true;
-        }
-
-        let update2Hold;
-        if (connected) {
-            update2()
-            update2Hold = setInterval(update2, 2500);
-            document.getElementById('isconnected').innerText = "Yes";
-            document.getElementById('toConnect').innerText = "Disconnect";
-        }
+        code = data.uuid;
     }
 };
 
@@ -574,7 +565,7 @@ function setupDesign(redo) {
         image.src = channels[dataIndex] ? (channels[dataIndex].image || DEFAULT_AVATAR) : '../blank.png';
         image.id = `image_${cid}`;
         image.className = 'image';
-        image.alt = channels[dataIndex] ? `Avatar de ${channels[dataIndex].name}` : '';
+        image.alt = channels[dataIndex] ? `Avatar of ${channels[dataIndex].name}` : '';
         image.loading = 'lazy';
         image.onerror = () => {
             image.onerror = null;
@@ -952,7 +943,7 @@ function setupMDMStyles() {
                             display: grid;
                             grid-template-columns: ${cardSpacings};
                         }
-    
+
                         .num {
                             height: 100%;
                             display: flex;
@@ -982,6 +973,9 @@ function setupMDMStyles() {
 }
 
 function updateQuickSelectMenu() {
+    const signature = data.data.map(channel => `${channel.id}:${channel.name}`).join('|');
+    if (signature === quickSelectSignature) return;
+    quickSelectSignature = signature;
     let past = document.getElementById('quickSelect').value;
     document.getElementById('quickSelect').innerHTML = '<option value="">Select</option>';
     for (const channel of data.data) {
@@ -1155,7 +1149,7 @@ function update(doGains = true) {
                                     case 'topFasterObserved':
                                         if (topGainObserved < bottomGainObserved) continue;
                                         break;
-                                } 
+                                }
 
                                 let condition = false;
                                 switch (diffEffect.method) {
@@ -1218,7 +1212,7 @@ function update(doGains = true) {
                                             break;
                                         case 'slowerObserved':
                                             bottomGainObserved > topGainObserved ? thisCardGlows = true : nextCardGlows = true;
-                                            break;                                       
+                                            break;
                                     }
 
                                     if (thisCardGlows) {
@@ -1521,7 +1515,7 @@ function addNewChannels() {
                 newChannels = [data2];
             }
 
-            // old Livecountsedit v7.0 save
+            // old PulseCount v7.0 save
             if (typeof data2.saveType === 'number') {
                 return alert('Saves must be converted before you can import channels.');
             }
@@ -1978,12 +1972,12 @@ document.getElementById('showCounts').addEventListener('change', function () {
 });
 
 document.getElementById('fireObservedGains').addEventListener('change', function () {
-    data.fireIcons.fireObservedGains = this.checked;  
+    data.fireIcons.fireObservedGains = this.checked;
     fix();
 })
 
 document.getElementById('estimateUsingObservedGains').addEventListener('change', function () {
-    data.differenceStyles.estimateUsingObservedGains = this.checked;  
+    data.differenceStyles.estimateUsingObservedGains = this.checked;
     fix();
 })
 
@@ -2129,7 +2123,7 @@ function fix() {
     switch (data.differenceStyles.alignDifferences) {
         case 'right':
             document.getElementById('differenceAlignmentDirection').innerText = ', right';
-            document.getElementById('differenceAlignmentTooltip').setAttribute("title", 
+            document.getElementById('differenceAlignmentTooltip').setAttribute("title",
                 "The position of the difference counter, in percent of card height and width offset from the top right corner of the card.");
             document.getElementById('differenceAlignmentComma').style.display = '';
             document.getElementById('leftDifferencePlacing').style.display = '';
@@ -2137,7 +2131,7 @@ function fix() {
             break;
         case 'center':
             document.getElementById('differenceAlignmentDirection').innerText = '';
-            document.getElementById('differenceAlignmentTooltip').setAttribute("title", 
+            document.getElementById('differenceAlignmentTooltip').setAttribute("title",
                 "The position of the difference counter, in percent of card height offset from the top of the card.");
             document.getElementById('differenceAlignmentComma').style.display = 'none';
             document.getElementById('leftDifferencePlacing').style.display = 'none';
@@ -2145,7 +2139,7 @@ function fix() {
             break;
         default:
             document.getElementById('differenceAlignmentDirection').innerText = ', left';
-            document.getElementById('differenceAlignmentTooltip').setAttribute("title", 
+            document.getElementById('differenceAlignmentTooltip').setAttribute("title",
                 "The position of the difference counter, in percent of card height and width offset from the top left corner of the card.");
             document.getElementById('differenceAlignmentComma').style.display = '';
             document.getElementById('leftDifferencePlacing').style.display = '';
@@ -2176,7 +2170,7 @@ function fix() {
             width: calc(100% + ${data.boxSpacing}vw);
             visibility: hidden;
         }
-            
+
         .subgap .text {
             display: ${data.differenceStyles.abbDifferences ? 'block' : 'none'};
         }
@@ -2184,7 +2178,7 @@ function fix() {
         .subgap .odometer {
             display: ${data.differenceStyles.abbDifferences ? 'none' : 'block'};
         }
-        
+
         `;
 
     document.getElementById('cardStyles').innerText = `
@@ -2232,7 +2226,7 @@ function fix() {
     document.querySelectorAll('.image').forEach(function (card) {
         card.style.display = data.showImages ? "" : "none";
     })
-    
+
     document.getElementById('showCounts').checked = data.showCounts;
     document.querySelectorAll('.count').forEach(function (card) {
         card.style.display = data.showCounts ? "" : "none";
@@ -2270,7 +2264,7 @@ function fix() {
         .num {
           width: ${data.rankingsWidth}px;
         }
-        
+
         `;
     if (data.bgColor.startsWith('http') || data.bgColor.startsWith('data:')) {
         document.getElementById('backPickerUrl').value = (data.bgColor);
@@ -2452,176 +2446,6 @@ function convert3letterhexto6letters(hex) {
     return hex;
 }
 
-async function connect() {
-    if (window.location.href.includes('?code=')) {
-        window.location.href = window.location.href.split('?code=')[0];
-    } else {
-        if (!data.streamerMode) toggleStreamerMode();
-        await saveInBrowser(COUNTER_THEME, false)
-        window.location.href = window.location.href + "?code=" + code;
-    }
-}
-
-
-function update2() {
-    fetch(apiurl + code + '')
-        .then(response => response.json())
-        .then(json => {
-            if (json.users) {
-                if (json.users.length > 0) {
-                    for (let i = 0; i < json.users.length; i++) {
-                        let hasID = false;
-                        for (let r = 0; r < data.data.length; r++) {
-                            if (data.data[r].id == json.users[i].id) {
-                                min = parseInt(json.users[i].min);
-                                max = parseInt(json.users[i].max);
-                                if (min > data.gain_max) {
-                                    min = data.gain_max;
-                                } else if (min < data.gain_min) {
-                                    min = data.gain_min;
-                                }
-                                if (max > data.gain_max) {
-                                    max = data.gain_max;
-                                } else if (max < data.gain_min) {
-                                    max = data.gain_min;
-                                }
-                                data.data[r].min_gain = min;
-                                data.data[r].max_gain = max;
-                                hasID = true;
-                            }
-                        }
-                        if (!hasID) {
-                            fetch('https://mixerno.space/api/youtube-channel-counter/user/' + json.users[i].id + '')
-                                .then(response => response.text())
-                                .then(json2 => {
-                                    let id = json.users[i].id;
-                                    let min = json.users[i].min;
-                                    let max = json.users[i].max; if (min > data.gain_max) {
-                                        min = data.gain_max;
-                                    } else if (min < data.gain_min) {
-                                        min = data.gain_min;
-                                    }
-                                    if (max > data.gain_max) {
-                                        max = data.gain_max;
-                                    } else if (max < data.gain_min) {
-                                        max = data.gain_min;
-                                    }
-
-                                    if (json2 == "null") {
-                                        data.data.push({
-                                            "name": 'User ' + (data.data.length + 1),
-                                            "count": 0,
-                                            "image": BLANK_IMAGE_URL,
-                                            "min_gain": min,
-                                            "max_gain": max,
-                                            "id": id,
-                                            "lastCount": 0
-                                        });
-                                        fix();
-                                    } else {
-                                        json2 = JSON.parse(json2);
-                                        let name = json2.user[0].count;
-                                        let image = json2.user[1].count;
-                                        data.data.push({
-                                            "name": name,
-                                            "count": 0,
-                                            "image": image,
-                                            "min_gain": min,
-                                            "max_gain": max,
-                                            "id": id,
-                                            "lastCount": 0
-                                        });
-                                        fix();
-                                    }
-                                })
-                        }
-                    }
-                }
-                if (json.events.length > 0) {
-                    for (let i = 0; i < json.events.length; i++) {
-                        if (json.events[i].values) {
-                            if (json.events[i].rates) {
-                                let id = json.events[i].id;
-                                let min = parseFloat(json.events[i].values[0])
-                                let max = parseFloat(json.events[i].values[1])
-                                for (let i = 0; i < data.data.length; i++) {
-                                    if (data.data[i].id == id) {
-                                        let num = Math.floor(Math.random() * (max - min + 1)) + min;
-                                        data.data[i].min_gain += num;
-                                        data.data[i].max_gain += num;
-                                    }
-                                }
-                            } else {
-                                let id = json.events[i].id;
-                                let min = parseFloat(json.events[i].values[0])
-                                let max = parseFloat(json.events[i].values[1])
-                                for (let i = 0; i < data.data.length; i++) {
-                                    if (data.data[i].id == id) {
-                                        let num = Math.floor(Math.random() * (max - min + 1)) + min;
-                                        data.data[i].count += num;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (json.system.length > 0) {
-                    for (let i = 0; i < json.system.length; i++) {
-                        if (json.system[i].type == "user") {
-                            let username = "";
-                            let set = 0;
-                            for (let a = 0; a < data.data.length; a++) {
-                                if (data.data[a].id == json.system[i].id) {
-                                    username = data.data[a].name;
-                                    set = data.data[a].count;
-                                }
-                            }
-                            fetch(apiurl + code + '/' + json.system[i].id + '/user?subs=' + set + '&name=' + username + '')
-                        }
-                        if (json.system[i].type == "gains") {
-                            let username = "";
-                            let gains = [];
-                            for (let a = 0; a < data.data.length; a++) {
-                                if (data.data[a].id == json.system[i].id) {
-                                    username = data.data[a].name;
-                                    gains[0] = data.data[a].min_gain;
-                                    gains[1] = data.data[a].max_gain;
-                                }
-                            }
-                            fetch(apiurl + code + '/' + json.system[i].id + '/gains?gains=' + gains[0] + ',' + gains[1] + '&name=' + username + '')
-                        }
-                        if (json.system[i].type == "rank") {
-                            let username = "";
-                            let rank = 0;
-                            for (let a = 0; a < data.data.length; a++) {
-                                if (data.data[a].id == json.system[i].id) {
-                                    username = data.data[a].name;
-                                    rank = a + 1;
-                                }
-                            }
-                            fetch(apiurl + code + '/' + json.system[i].id + '/rank?rank=' + rank + '&name=' + username + '')
-                        }
-                    }
-                }
-            } else {
-                alert("You are no longer connected.");
-                clearInterval(update2Hold);
-                document.getElementById('isconnected').innerText = "No";
-                fetch(apiurl + 'create?code=' + code + '', {
-                    method: 'POST'
-                })
-                    .then(response => response.text())
-                    .then(async json => {
-                        if (json == "done") {
-                            await saveInBrowser(COUNTER_THEME, false)
-                            if (obsMode) localStorage.setItem('obs-' + COUNTER_THEME, '1');
-                            location.reload();
-                        }
-                    })
-            }
-        });
-}
-
 document.getElementById('autosave').addEventListener('change', async function () {
     if (document.getElementById('autosave').checked) {
         clearInterval(saveInterval);
@@ -2645,71 +2469,6 @@ document.getElementById('updateint').addEventListener('change', function () {
     updateInterval = setInterval(update, int);
     data.updateInterval = int;
 })
-
-document.getElementById('min_gain_global').addEventListener('change', function () {
-    let min = document.getElementById('min_gain_global').value;
-    if (isNaN(min)) {
-        alert("Please enter a number.")
-        return;
-    }
-    data.gain_min = min;
-});
-
-document.getElementById('max_gain_global').addEventListener('change', function () {
-    let max = document.getElementById('max_gain_global').value;
-    if (isNaN(max)) {
-        alert("Please enter a number.")
-        return;
-    }
-    data.gain_max = max;
-});
-
-function custom() {
-    prompt("What is the command name?")
-    let type = prompt("1 or 2 - (1) The channel should gain instant subs OR (2) the channel should have their rate changed.")
-    if (type == "1") {
-        let min = prompt("What is the minimum amount of subscribers the channel can gain?")
-        if (!min || isNaN(min)) {
-            alert("Please enter a number.")
-            return;
-        }
-        let max = prompt("What is the maximum amount of subscribers the channel can gain?")
-        if (!max || isNaN(max)) {
-            alert("Please enter a number.")
-            return;
-        }
-        let returnText = prompt("What should the commands response be? (use $(user) for the name and $(query) for any additional text)")
-        if (returnText) {
-            returnText = '&returnText=' + returnText;
-        }
-
-        const result = '$(urlfetch ' + apiurl + '' + code + '/$(userid)?values=' + min + ',' + max + returnText + ')'
-        navigator.clipboard.writeText(result);
-        alert("Copied command to clipboard!")
-    } else if (type == "2") {
-        let min = prompt("What is the minimum amount the channel's rate should gain? (we recommend less than 1 (0.1, 0.2, etc))");
-        if (!min || isNaN(min)) {
-            alert("Please enter a number.");
-            return;
-        }
-        let max = prompt("What is the maximum amount the channel's rate should gain? (we recommend less than 1 (0.1, 0.2, etc))");
-        if (!max || isNaN(max)) {
-            alert("Please enter a number.");
-            return;
-        }
-        let returnText = prompt("What should the commands response be? (use $(user) for the name and $(query) for any additional text)")
-        if (returnText) {
-            returnText = '&returnText=' + returnText;
-        }
-
-        const result = '$(urlfetch ' + apiurl + '' + code + '/$(userid)?values=' + min + ',' + max + returnText + ')&rates=true';
-        navigator.clipboard.writeText(result);
-        alert("Copied command to clipboard!")
-    } else {
-        alert("Please enter type (1 or 2)");
-        return;
-    }
-}
 
 document.getElementById('reverseAnimation').addEventListener('click', function () {
     data.reverseAnimation = this.checked;
@@ -3058,7 +2817,7 @@ function saveAPIUpdates() {
         }
     }
     data.apiUpdates.headers = newHeaders;
-    
+
     let body = document.getElementById('body').value.toString().split(';').filter(x => x.trim());
     let newBody = {};
     for (let i = 0; i < body.length; i++) {
@@ -3336,7 +3095,7 @@ function addFireIcon() {
             </select></label>
             <label>Fire icon: <input type="text" id="fireIconUrl" placeholder="https://example.com/image.png"><label> or </label><input type="file" id="fireIconFile"></label>
             <label>Rank color: <input type="color" id="fireIconRankColor"></label>
-            <label>Rank margin (top, left) in pixels:<br><span class="no-wrap"><input class="s-width" type="number" step="any" id="fireIconRankMargin" placeholder="Default">, 
+            <label>Rank margin (top, left) in pixels:<br><span class="no-wrap"><input class="s-width" type="number" step="any" id="fireIconRankMargin" placeholder="Default">,
             <input class="s-width" type="number" step="any" id="fireIconRankMarginLeft" placeholder="Default"></span></label>
             <label>Rank font weight: <select class="s-width" id="fireIconRankFontWeight">
                 ${FONT_WEIGHTS}
@@ -3456,7 +3215,7 @@ function loadFireIcons() {
         nameInput.setAttribute('value', fireIcon.name);
         nameInput.id = `new_fire_name_${i}`;
         nameLabel.append(document.createElement('br'), nameInput);
-        
+
         const conditionLabel = document.createElement('label');
         conditionLabel.innerText = 'Condition:';
         const span1 = document.createElement('span');
@@ -3623,7 +3382,7 @@ function addDifferenceEffect() {
             <label>Difference effect name:<br><input type="text" class="l-width" id="diffEffectName" placeholder="Difference"></label>
             <label>Difference threshold: </label><input type="number" class="s-width" step="any" id="diffEffectThreshold" placeholder="1000"><br>
             <label>Difference threshold method: <select class="m-width" id="diffMethod" name="diffMethod">
-                <option value="<=">Less than (≤)</option>    
+                <option value="<=">Less than (≤)</option>
                 <option value="==">Equal to (=)</option>
                 <option value=">=">Greater than (≥)</option>
                 <option value="!=">Not equal to (≠)</option>
@@ -3782,7 +3541,7 @@ function loadDifferenceEffects () {
         thresholdInput.setAttribute('value', diffEffect.threshold);
         span1.append(methodSelect, thresholdInput, document.createElement('br'));
         conditionLabel.append(document.createElement('br'), span1);
-        
+
         const shakingLabel = document.createElement('label');
         shakingLabel.innerText = 'Icon shaking: ';
         const shakingCheckbox = document.createElement('input');
@@ -3856,7 +3615,7 @@ function loadDifferenceEffects () {
             showWhenSelect.append(opt);
         }
         showWhenLabel.append(document.createElement('br'), showWhenSelect);
-        
+
         iconInnerDiv1.append(iconInnerDiv2, nameLabel, conditionLabel, shakingLabel, diffColorLabel, glowLabel, glowColorLabel, showWhenLabel)
         div.append(iconDiv);
         iconDiv.append(iconInnerDiv1);
@@ -4047,7 +3806,7 @@ function loadHeader() {
             div.style.color = item.attributes.color;
             div.style.fontSize = item.attributes.size + "px";
             div.style.fontWeight = item.attributes.fontWeight || "400";
-            
+
 
             // Function to update the displayed text
             const updateDisplayText = () => {
@@ -4059,7 +3818,7 @@ function loadHeader() {
                     // Duplicate content for seamless scrolling - duplicate multiple times for smooth loop
                     const separator = ' • ';
                     const duplicatedText = `${displayText}${separator}${displayText}${separator}`;
-                    
+
                     const headerScrollingText = document.createElement('div');
                     headerScrollingText.className = `header-scrolling-text ${directionClass}`;
                     const span = document.createElement('span');
@@ -4080,7 +3839,7 @@ function loadHeader() {
             updateDisplayText();
 
             // Update text with variables periodically if variables are used
-            
+
             if (item.attributes.text && includesAtLeastOneOf(item.attributes.text, '$name', '$hourly', '$count', '$rank', '$repeat', '$abbhourly', '$abbcount')) {
                 const updateInterval = (item.attributes.updateInterval || data.updateInterval || 2) * 1000;
                 headerIntervals.push(setInterval(updateDisplayText, updateInterval));
@@ -4153,10 +3912,10 @@ function loadHeader() {
             battleContainer.className = 'battle-container battle';
             battleContainer.style.backgroundColor = item.attributes.bgColor;
             battleContainer.style.height = item.attributes.boxHeight;
-            
+
             const battleContainerLeft = document.createElement('div');
             battleContainerLeft.className = 'battle_container battle_container_left';
-            
+
             const leftImage = document.createElement('img');
             leftImage.style.float = 'left';
             leftImage.style.borderRadius = item.attributes.roundAvatars ? '50%' : (data.imageBorder + '%');
@@ -4213,13 +3972,13 @@ function loadHeader() {
             rightImage.style.height = rightImage.style.width = item.attributes.imageSize + 'mm';
             rightImage.src = DEFAULT_AVATAR;
             rightImage.id = `battle_image2_${item.name}`;
-            
+
             if (!item.attributes.roundAvatars) {
                 battleContainer.style.borderRadius = 0;
                 battleContainerLeft.style.borderRadius = 0;
                 battleContainerRight.style.borderRadius = 0;
             }
-            
+
             battleContainerRight.append(rightBattleInfo, rightImage);
             battleContainer.append(battleContainerLeft, diffContainer, battleContainerRight);
             div.append(battleContainer);
@@ -4250,7 +4009,7 @@ function loadHeader() {
                         left1 = '#' + formatRank(rank1) + ' ';
                         left2 = '#' + formatRank(rank2) + ' ';
                         break;
-                    case 'after': 
+                    case 'after':
                         right1 = ' #' + formatRank(rank1);
                         right2 = ' #' + formatRank(rank2);
                         break;
@@ -4267,7 +4026,7 @@ function loadHeader() {
                 if (['left', 'right', 'outside', 'inside'].includes(item.attributes.battleRankPos)) {
                     let rankBox1 = div.querySelector('.battle_container_left').querySelector(".num");
                     if (rankBox1 && ((rankBox1.classList.contains("rank_battle_left")
-                        && ['right', 'inside'].includes(item.attributes.battleRankPos)) || 
+                        && ['right', 'inside'].includes(item.attributes.battleRankPos)) ||
                         (rankBox1.classList.contains('rank_battle_right')
                         && ['left', 'outside'].includes(item.attributes.battleRankPos))
                     )) {
@@ -4292,7 +4051,7 @@ function loadHeader() {
 
                     let rankBox2 = div.querySelector('.battle_container_right').querySelector(".num");
                     if (rankBox2 && ((rankBox2.classList.contains("rank_battle_left")
-                        && ['right', 'outside'].includes(item.attributes.battleRankPos)) || 
+                        && ['right', 'outside'].includes(item.attributes.battleRankPos)) ||
                         (rankBox2.classList.contains('rank_battle_right')
                         && ['left', 'inside'].includes(item.attributes.battleRankPos))
                     )) {
@@ -4507,9 +4266,9 @@ function loadHeader() {
 
                 if (['left', 'right'].includes(item.attributes.userRankPos)) {
                     let rankBox = div.querySelector(".num");
-                    if (rankBox && ((rankBox.classList.contains("rank_battle_left") 
-                        && item.attributes.userRankPos === 'right') || 
-                        (rankBox.classList.contains("rank_battle_right") 
+                    if (rankBox && ((rankBox.classList.contains("rank_battle_left")
+                        && item.attributes.userRankPos === 'right') ||
+                        (rankBox.classList.contains("rank_battle_right")
                         && item.attributes.userRankPos === 'left'))) {
                         rankBox.remove();
                         rankBox = null;
@@ -4526,13 +4285,13 @@ function loadHeader() {
                             div.querySelector(".battle_container").appendChild(rankBox);
                         }
                     }
-                    
+
                     rankBox.innerHTML = `
                         <div class="num_text">${rank}</div>
                     `
 
                     applyFire(div, rank - 1, item.attributes.applyFire)
-                    
+
                 } else {
                     if (div.querySelector(".num")) {
                         div.querySelector(".num").remove();
@@ -4630,7 +4389,7 @@ function findClosestBattle(index, rankRange, threshold, thresholdType, type) {
         pairs.sort((a, b) => a.time - b.time);
     } else {
         pairs.sort((a, b) => a.diff - b.diff);
-    } 
+    }
     return pairs[index - 1];
 }
 
@@ -4644,7 +4403,7 @@ async function saveTopSettings(shouldAlert = true) {
     let items = [];
     const valid = Array.from(document.querySelector("#sections").children)
         .every(x => isValidHeaderName(x.querySelector(".section_option_name")?.value));
-    
+
     if (!valid) {
         return alert("Section names cannot be empty and cannot contain any of the following characters < > ' \" \\ &");
     }
@@ -4684,7 +4443,7 @@ async function saveTopSettings(shouldAlert = true) {
             }
         });
         items.push(item);
-        
+
     });
     data.headerSettings = {
         totalSections: document.getElementById("totalSections").value || 0,
@@ -4799,7 +4558,7 @@ async function loadTopSettings(itemName, itemType) {
             const advancedSettingsContainer = document.createElement('details');
             advancedSettingsContainer.className = 'section-advanced-options';
             advancedSettingsContainer.innerHTML = '<summary><strong>Advanced Options (click to toggle)</strong></summary>';
-            
+
             const advancedSettingsHOG1 = document.createElement('div');
             advancedSettingsHOG1.className = 'header-option-group';
             advancedSettingsHOG1.style.marginTop = '10px';
@@ -4840,7 +4599,7 @@ async function loadTopSettings(itemName, itemType) {
             <input type="number" class="section_attribute_updateInterval header_option xs-width"/>`;
             setValue(updateIntervalSetting, item.attributes.updateInterval || 2);
             advancedSettingsHOG2.append(listLengthSetting, sortOrderSetting, updateIntervalSetting);
-            
+
             advancedSettingsContainer.append(advancedSettingsHOG1, advancedSettingsHOG2);
             result.append(basicSettingsContainer, advancedSettingsContainer);
             return result;
@@ -4927,7 +4686,7 @@ async function loadTopSettings(itemName, itemType) {
             thresholdTypeSetting.innerHTML = `<label><strong>Threshold type:</strong></label>
             <select class="section_attribute_thresholdType header_option m-width">
                 <option value="count">Count</option>
-                <option value="hours">Hours until closing</option> 
+                <option value="hours">Hours until closing</option>
             </select>`;
             setSelect(thresholdTypeSetting, item.attributes.thresholdType);
             const thresholdSetting = document.createElement('div');
@@ -4939,9 +4698,9 @@ async function loadTopSettings(itemName, itemType) {
             rankingOption.innerHTML = `<label><strong>nth closest battle (e.g. 1 = closest, 2 = 2nd closest):</strong></label>
             <input type="number" class="section_attribute_ranking header_option xs-width optional" placeholder="1">`;
             setValue(rankingOption, fixNum(item.attributes.ranking, ''));
-            basicSettingsContainer.append(battleTypeSetting, updateIntervalSetting, showRankSetting, applyFireSetting, 
+            basicSettingsContainer.append(battleTypeSetting, updateIntervalSetting, showRankSetting, applyFireSetting,
                 restrictRanksSetting, hideInvalidSetting, thresholdTypeSetting, thresholdSetting, rankingOption);
-            
+
             const userIDHOG = document.createElement('div');
             userIDHOG.style.marginTop = '10px';
             userIDHOG.className = 'header-option-group header_option_user_id';
@@ -4959,9 +4718,9 @@ async function loadTopSettings(itemName, itemType) {
             advancedSettingsContainer.className = 'section-advanced-options';
             advancedSettingsContainer.innerHTML = '<summary><strong>Styling Options (click to toggle)</strong></summary>';
             advancedSettingsContainer.style.marginTop = '10px';
-            
+
             const advancedSettingsHOG1 = createBattleAndUserStyling()
-            
+
             const advancedSettingsHOG2 = document.createElement('div');
             advancedSettingsHOG2.className = 'header-option-group';
             const odometerColorsSetting = document.createElement('div');
@@ -4974,7 +4733,7 @@ async function loadTopSettings(itemName, itemType) {
             battleAlignSetting.innerHTML = `<input type="checkbox" class="section_attribute_battleAlign header_option"><label>Align counters to sides</label>`;
             setChecked(battleAlignSetting, item.attributes.battleAlign);
             advancedSettingsHOG2.append(odometerColorsSetting, roundAvatarsSetting, battleAlignSetting);
-            
+
             advancedSettingsContainer.append(advancedSettingsHOG1,advancedSettingsHOG2);
             result.append(basicSettingsContainer, userIDHOG, advancedSettingsContainer);
             return result;
@@ -5022,7 +4781,7 @@ async function loadTopSettings(itemName, itemType) {
             setValue(rankingOption, fixNum(item.attributes.ranking, ''));
             basicSettingsContainer.append(userTypeSetting, updateIntervalSetting, userRankPosSetting,
                 applyFireSetting, restrictRanksSetting, hideInvalidSetting, rankingOption);
-            
+
             const userIDOption = document.createElement('div');
             userIDOption.style.marginTop = '10px';
             userIDOption.className = 'header_option_user_id';
@@ -5286,8 +5045,8 @@ function updateScrollbars() {
     if (data.showScrollbars === false) {
         document.getElementById("noScrollbars").innerText = `
             .main {
-                scrollbar-width: none;    
-                -ms-overflow-style: none; 
+                scrollbar-width: none;
+                -ms-overflow-style: none;
             }
 
             .main::-webkit-scrollbar {
@@ -5295,6 +5054,6 @@ function updateScrollbars() {
             }
         `
     } else {
-        document.getElementById("noScrollbars").innerText = "";   
+        document.getElementById("noScrollbars").innerText = "";
     }
 }

@@ -58,7 +58,7 @@ const TOP50_CHANNELS = [
 
 function channelAvatar(channel) {
     const initials = channel.name.replace(/^✿\s*/, '').split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase();
-    const palettes = [['#8b5cf6', '#4c1d95'], ['#0ea5e9', '#164e63'], ['#f43f5e', '#881337'], ['#f59e0b', '#78350f'], ['#10b981', '#064e3b']];
+    const palettes = [['#52647a', '#354356'], ['#356387', '#24465f'], ['#586058', '#3d453d'], ['#715d70', '#4c3e4b'], ['#3f6d70', '#29494b']];
     const palette = palettes[channel.rank % palettes.length];
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="${palette[0]}"/><stop offset="1" stop-color="${palette[1]}"/></linearGradient></defs><rect width="96" height="96" rx="48" fill="url(#g)"/><text x="48" y="58" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" font-weight="700" fill="white">${initials}</text></svg>`;
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
@@ -66,8 +66,11 @@ function channelAvatar(channel) {
 
 function getTop50Channels() {
     return TOP50_CHANNELS.map(([name, count, id, image], index) => {
-        const channel = { name, count, id, rank: index + 1, min_gain: 0, max_gain: 0, image: image || '' };
-        if (!channel.image) channel.image = channelAvatar(channel);
+        const channel = { name, count, id, rank: index + 1, min_gain: 0, max_gain: 0, image: '' };
+        channel.image = channelAvatar(channel);
+        const minimum = Math.max(1, Math.round(count / 220000000));
+        channel.min_gain = minimum;
+        channel.max_gain = minimum + 2 + (index % 4);
         return channel;
     });
 }
@@ -99,7 +102,7 @@ function setupChannelSuggestions() {
         const query = search.value.trim().toLocaleLowerCase();
         list.replaceChildren();
         const channels = getTop50Channels().filter(channel => `${channel.name} ${channel.id}`.toLocaleLowerCase().includes(query));
-        document.getElementById('suggestionResults').textContent = `${channels.length} canais`;
+        document.getElementById('suggestionResults').textContent = `${channels.length} channels`;
         channels.forEach(channel => {
             const row = document.createElement('div');
             row.className = 'suggestion-row';
@@ -115,17 +118,17 @@ function setupChannelSuggestions() {
             const name = document.createElement('strong');
             name.textContent = channel.name;
             const stats = document.createElement('span');
-            stats.textContent = `${new Intl.NumberFormat('pt-BR').format(channel.count)} inscritos · ${channel.id}`;
+            stats.textContent = `${new Intl.NumberFormat('en-US').format(channel.count)} subscribers · ${channel.id}`;
             info.append(name, stats);
             const add = document.createElement('button');
             const exists = data.data.some(item => item.id === channel.id);
-            add.textContent = exists ? 'Adicionado' : '+ Adicionar';
+            add.textContent = exists ? 'Added' : '+ Add';
             add.disabled = exists;
             add.addEventListener('click', async () => {
                 data.data.push(channel);
                 update(false);
                 await saveInBrowser(COUNTER_THEME, false);
-                showTop50Toast(`${channel.name} adicionado ao ranking.`);
+                showTop50Toast(`${channel.name} added to the ranking.`);
                 render();
             });
             row.append(rank, image, info, add);
@@ -139,19 +142,19 @@ function setupChannelSuggestions() {
     search.addEventListener('input', render);
     document.getElementById('addMissingChannels').addEventListener('click', async () => {
         const missing = getTop50Channels().filter(channel => !data.data.some(item => item.id === channel.id));
-        if (!missing.length) return showTop50Toast('Todos os 50 canais já estão na lista.');
+        if (!missing.length) return showTop50Toast('All 50 channels are already in your list.');
         data.data.push(...missing);
         update(false);
         await saveInBrowser(COUNTER_THEME, false);
-        showTop50Toast(`${missing.length} canais adicionados.`);
+        showTop50Toast(`${missing.length} channels added.`);
         render();
     });
     restoreButton?.addEventListener('click', async () => {
-        if (data.data.length && !confirm('Substituir sua lista atual pela sugestão Top 50? Exporte seus dados antes se quiser manter uma cópia.')) return;
+        if (data.data.length && !confirm('Replace your current list with the Top 50 suggestions? Export your data first if you want to keep a backup.')) return;
         data.data = getTop50Channels();
         selected = null;
         update(false);
         await saveInBrowser(COUNTER_THEME, false);
-        showTop50Toast('Top 50 atualizado. Agora ele é totalmente seu para editar.');
+        showTop50Toast('Top 50 restored. Every channel is ready to edit.');
     });
 }
