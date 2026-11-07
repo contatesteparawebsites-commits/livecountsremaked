@@ -8,6 +8,9 @@
     <link href="../common.css?v=VERSION_PLACEHOLDER" rel="stylesheet" type="text/css">
     <link href="./index.css?v=VERSION_PLACEHOLDER" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="../logo.png">
     <meta charSet="utf-8" />
     <meta name="description"
@@ -54,10 +57,32 @@
 </head>
 
 <body>
-    <div id="header"></div>
-    <div class="main" id="main" style="margin-left: 20px;"></div>
-    <div id="footer"></div>
-    <hr>
+    <header class="app-topbar no-obs-mode">
+        <a class="app-brand" href="../" aria-label="Voltar ao início">
+            <span class="app-brand-mark"><i></i><i></i><i></i></span>
+            <span>livecounts<strong>edit</strong></span>
+        </a>
+        <span class="app-breadcrumb">/ Top 50</span>
+        <nav><a href="../">Início</a><a href="../about/faq.html">Ajuda</a></nav>
+    </header>
+    <section class="workspace-intro no-obs-mode">
+        <div>
+            <span class="workspace-kicker">YOUTUBE · RANKING PERSONALIZÁVEL</span>
+            <h1>Top 50 canais</h1>
+            <p>Uma seleção atualizada para começar. Clique em qualquer canal para editar todos os detalhes.</p>
+        </div>
+        <div class="workspace-actions">
+            <button id="openSuggestions" class="primary-action"><span>＋</span> Explorar sugestões</button>
+            <button id="restoreTop50" class="secondary-action" title="Substituir a lista atual pela seleção inicial">Restaurar Top 50</button>
+        </div>
+    </section>
+    <div class="snapshot-note no-obs-mode"><span class="snapshot-dot"></span><strong>Sugestão atualizada em 07 nov 2026</strong><span>Valores públicos aproximados · edição livre</span><a href="https://vidiq.com/youtube-stats/top/50/" target="_blank" rel="noopener noreferrer">Fonte: vidIQ ↗</a></div>
+    <div class="leaderboard-shell">
+        <div id="header"></div>
+        <div class="main" id="main"></div>
+        <div id="footer"></div>
+    </div>
+    <div class="editor-jump no-obs-mode"><span>Dica: selecione um card acima e edite o canal em <strong>Adicionar / editar</strong>.</span><a href="#settings">Abrir controles ↓</a></div>
     <div class="bottom-stuff">
     <div class="other" id="settings">
         <div>
@@ -830,11 +855,22 @@
         </div>
     </div>
     <hr><br>
+    <dialog id="channelSuggestions" class="suggestions-dialog no-obs-mode">
+        <div class="suggestions-header">
+            <div><span class="workspace-kicker">PONTO DE PARTIDA</span><h2>Sugestões Top 50</h2><p>Adicione um canal ou complete sua lista. Nada é alterado sem sua ação.</p></div>
+            <button id="closeSuggestions" class="dialog-close" aria-label="Fechar">×</button>
+        </div>
+        <div class="suggestions-tools"><input id="suggestionSearch" type="search" placeholder="Buscar canal ou @usuário…" autocomplete="off"><button id="addMissingChannels" class="primary-action">Adicionar faltantes</button></div>
+        <div class="suggestions-meta"><span>Atualizado em 07 nov 2026 · valores aproximados</span><span id="suggestionResults">50 canais</span></div>
+        <div id="suggestionList" class="suggestion-list"></div>
+        <div class="suggestions-footer">Depois de adicionar, selecione o canal no ranking para editar nome, imagem, contagem e ganhos.</div>
+    </dialog>
     <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
     <script src="../converter/converter.js?v=VERSION_PLACEHOLDER"></script>
     <script src="../commonUtils.js?v=VERSION_PLACEHOLDER"></script>
     <script src="./js/utils.js?v=VERSION_PLACEHOLDER"></script>
     <script src="./js/scripts.js?v=VERSION_PLACEHOLDER"></script>
+    <script src="./channels.js?v=VERSION_PLACEHOLDER"></script>
     <script src="./index.js?v=VERSION_PLACEHOLDER"></script>
     <center>
         <a href="../about/discord.html" class="discord">Join the Discord for support, suggestions, and bug
