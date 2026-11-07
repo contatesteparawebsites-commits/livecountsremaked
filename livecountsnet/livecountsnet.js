@@ -30,7 +30,7 @@ window.onload = async () => {
         title: 'Clicking "Subscribe!" increases sub count by 1',
         value: true,
         type: 'checkbox',
-        path: 'data.lcnetSettings.subButton' 
+        path: 'data.lcnetSettings.subButton'
     }];
 
     MENU.tabs.find(x => x.title === 'Counter Settings').items.push(...extraCounterOptions);
@@ -69,8 +69,7 @@ window.onload = async () => {
             type: 'html',
             value: `<div>
                 <h3>Questions, bugs, comments, or suggestions?</h3>
-                <p>Read our <a href="/about/faq.html">website FAQ</a>.</p>
-                <p>You can also join the <a href="/about/discord.html">Livecountsedit Discord server</a>!</p>
+                <p>Read our <a href="${PULSE_SITE_ROOT}about/faq.html">website FAQ</a>.</p>
             </div>
             <hr>
             <div>

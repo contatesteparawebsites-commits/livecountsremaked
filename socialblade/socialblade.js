@@ -116,7 +116,7 @@ window.onload = async () => {
 
             delete oldSave.partialExports;
             data = mergeWithExampleData(oldSave, data);
-            
+
         } catch (err) {
             console.error(err);
         }
@@ -309,7 +309,7 @@ function renderChart() {
         },
         credits: {
             enabled: true,
-            text: 'Livecountsedit'
+            text: 'PulseCount'
         },
         series: [
             {

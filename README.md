@@ -1,17 +1,32 @@
-# livecountsedit.github.io
-# lcedit.com
+# PulseCount
 
-Website: <https://lcedit.com>
+A customizable collection of subscriber counters, view counters, comparisons, and YouTube Top 50 rankings.
 
-[Join us on Discord!](https://lcedit.com/about/discord)
+## Website
 
-See our [FAQ](https://lcedit.com/about/faq).
+[Open PulseCount](https://contatesteparawebsites-commits.github.io/livecountsremaked/)
 
-### Want to help contribute?
+## Included counters
 
-Read our [Contribution Policy](https://github.com/livecountsedit/livecountsedit.github.io/wiki/Contribution-Policy), which answers questions that you may have about contributing.
+- PulseCount subscriber, video, and comparison counters
+- Livecounts.net, SocialBlade, Akshatmittal, and YouTube Studio inspired layouts
+- An editable Top 50 with a current starting list and lightweight two-second simulations
+- Local browser saves, import/export tools, themes, custom rates, and fullscreen viewing
 
-### Disclaimer
-The counters on our website are parodies of live subscriber and follower count websites. All credit goes to the owners of the original websites for the designs of those pages. This website is for educational and fun purposes only, and we do not make any profit off of this site. We believe this constitutes fair use under Title 17 U.S.C. § 107 of the Copyright Act of 1976. No copyright infringement is intended. We also do not condone the use of this site for spreading misinformation.
+## Run locally
 
-Please let us know if you have any concerns about copyright.
+This is a static website. Serve the repository with any static HTTP server, for example:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000`.
+
+## Data and privacy
+
+Counter configurations are stored locally in your browser. No account is required. The Top 50 starting values are editable snapshots and are not presented as live YouTube API data.
+
+## Fork attribution
+
+This repository is a fork of the original [Livecountsedit project](https://github.com/livecountsedit/livecountsedit.github.io). Credit for the original counter implementations and layouts belongs to their respective authors.

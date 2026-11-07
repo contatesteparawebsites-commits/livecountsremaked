@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Livecountsedit - Fake Top 50</title>
+    <title>PulseCount - Fake Top 50</title>
     <link href="../odometer/odometer.css?v=VERSION_PLACEHOLDER" rel="stylesheet">
     <!-- <link href="./odometer.css" rel="stylesheet"> -->
     <link href="../common.css?v=VERSION_PLACEHOLDER" rel="stylesheet" type="text/css">
@@ -11,24 +11,24 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="../logo.png">
+    <link rel="icon" href="../logo.svg">
     <meta charSet="utf-8" />
     <meta name="description"
-        content="Livecountsedit - BEST LIVE PLATFORM FOR FAKE SUB COUNTS OF YOUTUBE, SOCIALBLADE, YT Studio, TOP 50, FYSC, FSCW, MDM" />
+        content="PulseCount — customizable subscriber counters, view counters, comparisons, and rankings., MDM" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title"
-        content="Livecountsedit - BEST LIVE PLATFORM FOR FAKE SUB COUNTS OF YOUTUBE, SOCIALBLADE, YT Studio, TOP 50, FYSC, FSCW, MDM" />
+        content="PulseCount — customizable subscriber counters, view counters, comparisons, and rankings., MDM" />
     <meta name="twitter:description"
-        content="Livecountsedit - BEST LIVE PLATFORM FOR FAKE SUB COUNTS OF YOUTUBE, SOCIALBLADE, YT Studio, TOP 50, FYSC, FSCW, MDM" />
-    <meta name="twitter:image" content="https://lcedit.com/images/top50.png" />
+        content="PulseCount — customizable subscriber counters, view counters, comparisons, and rankings., MDM" />
+    <meta name="twitter:image" content="https://contatesteparawebsites-commits.github.io/livecountsremaked/images/top50.png" />
     <meta property="og:title"
-        content="Livecountsedit - BEST LIVE PLATFORM FOR FAKE SUB COUNTS OF YOUTUBE, SOCIALBLADE, YT Studio, TOP 50, FYSC, FSCW, MDM" />
+        content="PulseCount — customizable subscriber counters, view counters, comparisons, and rankings., MDM" />
     <meta property="og:description"
-        content="Livecountsedit - BEST LIVE PLATFORM FOR FAKE SUB COUNTS OF YOUTUBE, SOCIALBLADE, YT Studio, TOP 50, FYSC, FSCW, MDM" />
+        content="PulseCount — customizable subscriber counters, view counters, comparisons, and rankings., MDM" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://lcedit.com" />
-    <meta property="og:image" content="https://lcedit.com/images/top50.png" />
+    <meta property="og:url" content="https://contatesteparawebsites-commits.github.io/livecountsremaked" />
+    <meta property="og:image" content="https://contatesteparawebsites-commits.github.io/livecountsremaked/images/top50.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="../jquery.js"></script>
@@ -54,35 +54,33 @@
     <style id="fireStyles"></style>
     <style id="noScrollbars"></style>
     <style id="customCSSOverrides"></style>
+    <link rel="stylesheet" href="../polish.css">
 </head>
 
 <body>
     <header class="app-topbar no-obs-mode">
-        <a class="app-brand" href="../" aria-label="Voltar ao início">
-            <span class="app-brand-mark"><i></i><i></i><i></i></span>
-            <span>livecounts<strong>edit</strong></span>
-        </a>
+        <a class="app-brand" href="../" aria-label="PulseCount home">PulseCount</a>
         <span class="app-breadcrumb">/ Top 50</span>
-        <nav><a href="../">Início</a><a href="../about/faq.html">Ajuda</a></nav>
+        <nav><a href="../">Home</a><a href="../about/faq.html">Help</a></nav>
     </header>
     <section class="workspace-intro no-obs-mode">
         <div>
-            <span class="workspace-kicker">YOUTUBE · RANKING PERSONALIZÁVEL</span>
-            <h1>Top 50 canais</h1>
-            <p>Uma seleção atualizada para começar. Clique em qualquer canal para editar todos os detalhes.</p>
+            <span class="workspace-kicker">YOUTUBE · CUSTOM RANKING</span>
+            <h1>YouTube Top 50</h1>
+            <p>An updated starting list with lightweight local simulation. Select any channel to edit it.</p>
         </div>
         <div class="workspace-actions">
-            <button id="openSuggestions" class="primary-action"><span>＋</span> Explorar sugestões</button>
-            <button id="restoreTop50" class="secondary-action" title="Substituir a lista atual pela seleção inicial">Restaurar Top 50</button>
+            <button id="openSuggestions" class="primary-action"><span>＋</span> Browse suggestions</button>
+            <button id="restoreTop50" class="secondary-action" title="Replace the current list with the starting selection">Restore Top 50</button>
         </div>
     </section>
-    <div class="snapshot-note no-obs-mode"><span class="snapshot-dot"></span><strong>Sugestão atualizada em 07 nov 2026</strong><span>Valores públicos aproximados · edição livre</span><a href="https://vidiq.com/youtube-stats/top/50/" target="_blank" rel="noopener noreferrer">Fonte: vidIQ ↗</a></div>
+    <div class="snapshot-note no-obs-mode"><span class="snapshot-dot"></span><strong>Starting list updated Nov 7, 2026</strong><span>Approximate public values · local gains every 2 seconds</span><a href="https://vidiq.com/youtube-stats/top/50/" target="_blank" rel="noopener noreferrer">Source: vidIQ ↗</a></div>
     <div class="leaderboard-shell">
         <div id="header"></div>
         <div class="main" id="main"></div>
         <div id="footer"></div>
     </div>
-    <div class="editor-jump no-obs-mode"><span>Dica: selecione um card acima e edite o canal em <strong>Adicionar / editar</strong>.</span><a href="#settings">Abrir controles ↓</a></div>
+    <div class="editor-jump no-obs-mode"><span>Tip: select a card above, then edit it in <strong>Add/Edit User</strong>.</span><a href="#settings">Open controls ↓</a></div>
     <div class="bottom-stuff">
     <div class="other" id="settings">
         <div>
@@ -135,19 +133,14 @@
                 <div>
                     <button onclick="saveInBrowser(COUNTER_THEME, true)">Save (In Browser)</button>
                 </div>
-                <div>
-                    <button id="streamerModeB" onclick="toggleStreamerMode()">Enable Streamer Mode</button>
-                </div>
-                <div>
-                    <button id="obsModeB" onclick="promptOBSMode()">Enable OBS Browser Mode</button>
-                </div>
+                <div><button onclick="pulseToggleFullscreen()">Fullscreen</button></div>
                 <div>
                     <input type="checkbox" id="autosave" autocomplete="off"><label>Autosave (15s)</label>
                 </div>
             </div>
             <p id="storage-warning"><strong>Warning: An error occurred when saving the data in your browser. This could
                     be the result of your save file being too large. Learn more about this error in <a
-                        href="https://github.com/livecountsedit/livecountsedit.github.io/wiki/Problems-with-Local-Storage">this
+                        href="https://github.com/contatesteparawebsites-commits/livecountsremaked/wiki/Problems-with-Local-Storage">this
                         article</a>.</strong></p>
             <hr>
         </div>
@@ -169,13 +162,9 @@
                 Settings</button>
             <button class="settingType" id="button_apiSettings" onclick="displaySetting('apiSettings', this)">API
                 Settings</button>
-            <button class="settingType" id="button_fyscSettings" onclick="displaySetting('fyscSettings', this)">FYSC
-                Settings</button>
             <button class="settingType" id="button_topSettings"
                 onclick="displaySetting('topSettings', this)">Header/Footer
                 Settings</button>
-            <button class="settingType" id="button_scriptSettings"
-                onclick="displaySetting('scriptSettings', this)">Add-ons</button>
             <button class="settingType" id="button_importExportSettings"
                 onclick="displaySetting('importExportSettings', this)">Import & Export Data</button>
             <button class="settingType" id="button_searchSettings"
@@ -594,121 +583,6 @@
                 <label>this will only update the count if the {count} of the abbreviated number changes</label>
             </div>
         </div>
-        <div id="fyscSettings" class="settings hidden">
-            <h2>FYSC Stream Hub</h2>
-
-            <div class="settings-container fysc-gain-settings">
-                <div>
-                    <label><strong>Min Gain (for streams):</strong><br>
-                        <input value="-10000" id="min_gain_global" autocomplete="off" class="m-width"></label>
-                </div>
-                <div>
-                    <label><strong>Max Gain (for streams):</strong><br>
-                        <input value="10000" id="max_gain_global" autocomplete="off" class="m-width"></label>
-                </div>
-            </div>
-
-            <hr>
-
-            <h3>NightBot Commands</h3>
-            <p>Copy these commands into your NightBot command responses. Each command serves a specific purpose for
-                managing your stream leaderboard.</p>
-
-            <div id="stream">
-                <div class="fysc-command-card">
-                    <h4>Add User Command</h4>
-                    <p>Allows users to add themselves to the leaderboard.</p>
-                    <p class="fysc-example"><strong>Example:</strong> <code>{!add 100/200}</code> - 100 is min gain, 200
-                        is max gain</p>
-                    <label><strong>Command Response:</strong></label>
-                    <div class="streamer-mode-wrapper" style="width: 100%">
-                    <textarea id="connect" autocomplete="off" rows="4"
-                        placeholder="Paste NightBot command response here..."></textarea>
-                        <div class="streamer-mode" copy="connect">Turn off Streamer Mode to view.<br>Click to copy.</div>
-                    </div>
-                </div>
-
-                <div class="fysc-command-card">
-                    <h4>Edit User Command</h4>
-                    <p>Allows users to edit their gain rates.</p>
-                    <p class="fysc-example"><strong>Example:</strong> <code>{!edit 100/200}</code> - Updates min/max
-                        gains</p>
-                    <label><strong>Command Response:</strong></label>
-                    <div class="streamer-mode-wrapper" style="width: 100%">
-                    <textarea id="connect3" autocomplete="off" rows="4"
-                        placeholder="Paste NightBot command response here..."></textarea>
-                        <div class="streamer-mode" copy="connect3">Turn off Streamer Mode to view.<br>Click to copy.</div>
-                    </div>
-                </div>
-
-                <div class="fysc-command-card">
-                    <h4>Example Command</h4>
-                    <p>Shows how to create custom upload command with gain values.</p>
-                    <p class="fysc-example"><strong>Tip:</strong> Add <code>&rates=true</code> to the end of the url to
-                        alter channel gain rates</p>
-                    <label><strong>Command Response:</strong></label>
-                    <div class="streamer-mode-wrapper" style="width: 100%">
-                    <textarea id="connect2" autocomplete="off" rows="4"
-                        placeholder="Paste NightBot command response here..."></textarea>
-                        <div class="streamer-mode" copy="connect2">Turn off Streamer Mode to view.<br>Click to copy.</div>
-                    </div>
-                </div>
-
-                <div class="fysc-command-card">
-                    <h4>Get Subscriber Count</h4>
-                    <p>Retrieves a user's current subscriber count.</p>
-                    <p class="fysc-example">Returns the subscriber count for the specified user</p>
-                    <label><strong>Command Response:</strong></label>
-                    <div class="streamer-mode-wrapper" style="width: 100%">
-                    <textarea id="connect4" autocomplete="off" rows="4"
-                        placeholder="Paste NightBot command response here..."></textarea>
-                        <div class="streamer-mode" copy="connect4">Turn off Streamer Mode to view.<br>Click to copy.</div>
-                    </div>
-                </div>
-
-                <div class="fysc-command-card">
-                    <h4>Get User Gains</h4>
-                    <p>Retrieves a user's current gain rate.</p>
-                    <p class="fysc-example">Returns the gain rate for the specified user</p>
-                    <label><strong>Command Response:</strong></label>
-                    <div class="streamer-mode-wrapper" style="width: 100%">
-                    <textarea id="connect5" autocomplete="off" rows="4"
-                        placeholder="Paste NightBot command response here..."></textarea>
-                    <div class="streamer-mode" copy="connect5">Turn off Streamer Mode to view.<br>Click to copy.</div>
-                    </div>
-                </div>
-
-                <div class="fysc-command-card">
-                    <h4>Get User Rank</h4>
-                    <p>Retrieves a user's current rank on the leaderboard.</p>
-                    <p class="fysc-example">Returns the rank position for the specified user</p>
-                    <label><strong>Command Response:</strong></label>
-                    <div class="streamer-mode-wrapper" style="width: 100%">
-                    <textarea id="connect6" autocomplete="off" rows="4"
-                        placeholder="Paste NightBot command response here..."></textarea>
-                        <div class="streamer-mode" copy="connect6">Turn off Streamer Mode to view.<br>Click to copy.</div>
-                    </div>
-                </div>
-            </div>
-
-            <hr>
-
-            <div class="fysc-connection-section">
-                <h3>NightBot Connection</h3>
-                <p>Connect to NightBot to enable live chat commands for your stream.</p>
-                <div class="middleBoringSettings">
-                    <div>
-                        <button onclick="connect()" class="discord" id="toConnect">Connect to NightBot</button><br>
-                        <label><strong>Status:</strong></label> <label id="isconnected">Not Connected</label>
-                    </div>
-                    <button onclick="custom()" class="discord">Custom Command Maker</button>
-                </div>
-                <p style="margin-top: 15px;">
-                    <strong>Need help?</strong> Watch the <a href="https://www.youtube.com/watch?v=j40Xs1zZqg4"
-                        target="_blank">tutorial video</a> on how to setup NightBot & LCEDIT for streams.
-                </p>
-            </div>
-        </div>
         <div id="topSettings" class="settings hidden">
             <div>
                 <h2>Header/Footer Settings</h2>
@@ -750,40 +624,6 @@
             </div>
         </div>
 
-        <div id="scriptSettings" class="settings hidden">
-            <h2>Add-ons</h2>
-            <p class="no-obs-mode">⚠️ <strong>WARNING: </strong>Only use this feature for debugging purposes, such as when a Livecountsedit Discord staff member tells you to run something. Never paste in code from an untrusted source!</p>
-            <button id="runSnippet" class="no-obs-mode">Run Code Snippet</button>
-            <div>
-                <p><strong>Disclaimer:</strong> The add-ons listed below are contributed by the Livecountsedit community, and although they are reviewed to make sure they're safe, they aren't considered official and we cannot guarantee they are free of mistakes, nor guarantee they are compatible with each other, all Top 50 features, or future updates. Please provide any feedback to the original creator in our <a href="/about/discord.html">Discord server</a>.</p>
-                <p id="loadedScripts"></p>
-                <button onclick="uninstallAllScripts()">Uninstall all</button> <button onclick="uninstallAllAIScripts()">Uninstall all AI-generated add-ons</button><br>
-                <select id="scriptSorter" class="l-width">
-                    <option value="lastUpdated">Sort by: Most recently updated</option>
-                    <option value="lastPublished">Sort by: Most recently published</option>
-                    <option value="lastCreated">Sort by: Most recently created</option>
-                    <option value="firstPublished">Sort by: First published</option>
-                    <option value="oldest">Sort by: Oldest</option>
-                    <option value="name">Sort by: Name</option>
-                </select>
-                <select id="scriptAuthorFilter" class="m-width">
-                    <option value="any">Author: any</option>
-                </select>
-                <select id="scriptTagFilter" class="m-width">
-                    <option value="any">Tag: any</option>
-                </select>
-                <select id="scriptAIFilter" class="l-width">
-                    <option value="hide">AI-generated add-ons: Hide</option>
-                    <option value="show">AI-generated add-ons: Show</option>
-                </select><br>
-                <p id="pageList">Pages: </p>
-                <hr>
-                <div id="scriptList">
-
-                </div>
-            </div>
-        </div>
-
         <div id="importExportSettings" class="settings hidden">
             <h2>Import & Export Data</h2>
             <div>
@@ -809,13 +649,10 @@
                             <label>Fire icons & settings<input type="checkbox" class="partial-export-option" partial-export="fireSettings"></label>
                             <label>Difference effects & settings<input type="checkbox" class="partial-export-option" partial-export="differenceSettings"></label>
                             <label>API updates<input type="checkbox" class="partial-export-option" partial-export="apiUpdates"></label>
-                            <label>Stream settings & ID<input type="checkbox" class="partial-export-option" partial-export="streamSettings"></label>
                             <label>Header/footer items & settings<input type="checkbox" class="partial-export-option" partial-export="headerSettings"></label>
-                            <label>Add-ons<input type="checkbox" class="partial-export-option" partial-export="scripts"></label>
                         </div>
                     </div>
                     <div style="flex: 1 1 400px;">
-                        <p>⚠️ <strong>WARNING:</strong> If you are connected to Nightbot or ever plan on doing so on this save, <strong>DO NOT</strong> share saves including Stream Settings & ID!</p>
                         <p>Additionally, if you use credientials for your API updates, <strong>DO NOT</strong> share saves including API update settings.</p>
                         <button onclick="enableAllPartialExports()">Select all</button><button onclick="disableAllPartialExports()">Deselect all</button><button onclick="toggleAllPartialExports()">Toggle all</button>
                         <hr>
@@ -844,7 +681,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
 
@@ -857,26 +694,22 @@
     <hr><br>
     <dialog id="channelSuggestions" class="suggestions-dialog no-obs-mode">
         <div class="suggestions-header">
-            <div><span class="workspace-kicker">PONTO DE PARTIDA</span><h2>Sugestões Top 50</h2><p>Adicione um canal ou complete sua lista. Nada é alterado sem sua ação.</p></div>
-            <button id="closeSuggestions" class="dialog-close" aria-label="Fechar">×</button>
+            <div><span class="workspace-kicker">STARTING POINT</span><h2>Top 50 suggestions</h2><p>Add one channel or complete your list. Nothing changes without your action.</p></div>
+            <button id="closeSuggestions" class="dialog-close" aria-label="Close">×</button>
         </div>
-        <div class="suggestions-tools"><input id="suggestionSearch" type="search" placeholder="Buscar canal ou @usuário…" autocomplete="off"><button id="addMissingChannels" class="primary-action">Adicionar faltantes</button></div>
-        <div class="suggestions-meta"><span>Atualizado em 07 nov 2026 · valores aproximados</span><span id="suggestionResults">50 canais</span></div>
+        <div class="suggestions-tools"><input id="suggestionSearch" type="search" placeholder="Search a channel or @username…" autocomplete="off"><button id="addMissingChannels" class="primary-action">Add missing</button></div>
+        <div class="suggestions-meta"><span>Updated Nov 7, 2026 · approximate values</span><span id="suggestionResults">50 channels</span></div>
         <div id="suggestionList" class="suggestion-list"></div>
-        <div class="suggestions-footer">Depois de adicionar, selecione o canal no ranking para editar nome, imagem, contagem e ganhos.</div>
+        <div class="suggestions-footer">After adding a channel, select it in the ranking to edit its name, avatar, count, and gains.</div>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
     <script src="../converter/converter.js?v=VERSION_PLACEHOLDER"></script>
     <script src="../commonUtils.js?v=VERSION_PLACEHOLDER"></script>
     <script src="./js/utils.js?v=VERSION_PLACEHOLDER"></script>
-    <script src="./js/scripts.js?v=VERSION_PLACEHOLDER"></script>
     <script src="./channels.js?v=VERSION_PLACEHOLDER"></script>
     <script src="./index.js?v=VERSION_PLACEHOLDER"></script>
-    <center>
-        <a href="../about/discord.html" class="discord">Join the Discord for support, suggestions, and bug
-            reports</a>
-    </center><br>
     </div>
+    <script src="../polish.js"></script>
 </body>
 
 </html>

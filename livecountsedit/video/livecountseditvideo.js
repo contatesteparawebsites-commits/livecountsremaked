@@ -6,7 +6,7 @@ window.onload = async () => {
 
     COUNTER_THEME = 'livecountseditvideo';
     example_data.saveType = COUNTER_THEME;
-    
+
     enableChartFeature();
     enableViewCounterMode();
 
@@ -66,7 +66,7 @@ window.onload = async () => {
     MENU.tabs.find(x => x.title === 'Design Settings & Styling').items.splice(5, 0, ...extraStyleOptions);
 
     const extraChartOptions = [{
-        title: 'Show lcedit.com chart credits',
+        title: 'Show PulseCount chart credits',
         type: 'checkbox',
         value: true,
         path: 'data.cardStyles.chartCreditsEnabled'
@@ -82,7 +82,7 @@ window.onload = async () => {
     }]
 
     const partialExportAddition = {
-        title: '<abbr title="Whether or not to show the footer, and whether or not the counter is full screen.">Livecountsedit theme settings</abbr>',
+        title: '<abbr title="Whether or not to show the footer, and whether or not the counter is full screen.">PulseCount theme settings</abbr>',
         value: true,
         type: 'checkbox',
         path: 'data.partialExports.lceditThemeSettings',
@@ -103,9 +103,8 @@ window.onload = async () => {
             type: 'html',
             value: `<div>
                 <h3>Questions, bugs, comments, or suggestions?</h3>
-                <p>Read our <a href="/about/faq.html">website FAQ</a>.</p>
-                <p>You can also join the <a href="/about/discord.html">Livecountsedit Discord server</a>!</p>
-                <p>Livecountsedit is made by Straight From MG and RandomPerson3465.</p>
+                <p>Read our <a href="${PULSE_SITE_ROOT}about/faq.html">website FAQ</a>.</p>
+                <p>PulseCount customizable counters.</p>
             </div>
             <hr>
             <div>
@@ -124,7 +123,7 @@ window.onload = async () => {
     }
 
     fixData(4);
-    
+
     drawMenu(MENU, document.querySelector('.tabs'), document.querySelector('.tab-stuff'), document.querySelector('.tab-controls'));
     afterDrawingMenu();
     await processImport(data);
@@ -300,7 +299,7 @@ function renderChart() {
         },
         credits: {
             enabled: data.cardStyles.chartCreditsEnabled,
-            text: 'lcedit.com',
+            text: 'PulseCount',
             style: {
                 color: data.cardStyles.chartGridColor
             }

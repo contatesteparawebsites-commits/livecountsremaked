@@ -1,3 +1,4 @@
+const PULSE_SITE_ROOT = document.currentScript?.getAttribute('src')?.startsWith('../../') ? '../../' : '../';
 const updaters = new Map();
 
 let COUNTER_THEME = '';
@@ -591,7 +592,7 @@ const MENU = {
                     value: '<p>Select what you would like included in your import/export:</p><br>'
                 },
                 {
-                    title: '<abbr title="e.g. Whether or not the counter is paused, streamer mode status, etc.">Current state and preferences</abbr>',
+                    title: '<abbr title="e.g. Whether or not the counter is paused and other preferences">Current state and preferences</abbr>',
                     value: true,
                     type: 'checkbox',
                     path: 'data.partialExports.state',
@@ -698,8 +699,7 @@ const MENU = {
         ['pauseB', 'Pause', 'pause()'],
         ['resetB', 'Reset', 'reset()'],
         ['saveInBrowser', 'Save (in browser)', 'saveInBrowser(COUNTER_THEME, true)'],
-        ['streamerModeB', 'Enable Streamer Mode', 'toggleStreamerMode()'],
-        ['obsModeB', 'Enable OBS Browser Mode', 'promptOBSMode()'],
+        ['fullscreenModeB', 'Fullscreen', 'pulseToggleFullscreen()'],
         ['refreshCountB', 'Refresh count', 'refreshCount()']
     ]
 }
@@ -840,7 +840,7 @@ function drawMenu(menu, buttons, divs, controls) {
                         const streamerModeDiv = document.createElement('div');
                         streamerModeDiv.className = 'streamer-mode';
                         streamerModeDiv.innerText = 'Turn off Streamer Mode to view this!';
-                        streamerModeWrapper.appendChild(streamerModeDiv); 
+                        streamerModeWrapper.appendChild(streamerModeDiv);
                         label.appendChild(streamerModeWrapper);
                     } else {
                         label.appendChild(elem);
@@ -903,7 +903,7 @@ function saveAPISettings(shouldAlert = true) {
         }
     }
     data.apiUpdates.headers = newHeaders;
-    
+
     let body = document.getElementById('apiBody').value.toString().split(';').filter(x => x.trim());
     let newBody = {};
     for (let i = 0; i < body.length; i++) {
@@ -927,7 +927,7 @@ function saveAPISettings(shouldAlert = true) {
 async function updateAPI(index) {
     let url = data.apiUpdates.url;
     url = url.includes('{{channelID}}') ? url.replace('{{channelID}}', data.data[index].id) : url + data.data[index].id;
-    
+
     let fetchOptions = {
         method: data.apiUpdates.method || 'GET'
     }
@@ -979,15 +979,15 @@ async function updateAPI(index) {
         }
         return result;
     }
-    
+
     if (data.apiUpdates.response.name.enabled) {
         nameUpdate = getItemFromPath(item, data.apiUpdates.response.name.path)
     }
-    
+
     if (data.apiUpdates.response.count.enabled) {
         countUpdate = parseFloat(getItemFromPath(item, data.apiUpdates.response.count.path));
     }
-    
+
     if (data.apiUpdates.response.image.enabled) {
         imageUpdate = getItemFromPath(item, data.apiUpdates.response.image.path);
     }
@@ -1010,7 +1010,7 @@ async function updateAPI(index) {
     if (data.apiUpdates.response.comments?.enabled) {
         commentsUpdate = parseFloat(getItemFromPath(item, data.apiUpdates.response.comments.path));
     }
-    
+
     idUpdate = getItemFromPath(item, data.apiUpdates.response.id.path);
 
     function updateStuff() {
@@ -1038,7 +1038,7 @@ async function updateAPI(index) {
             data.data[index].isSubCounter() ? data.data[index].adjustForAPI(countUpdate) : data.data[index].count = countUpdate;
         }
     }
-    
+
     if (data.apiUpdates.response.id.IDIncludes) {
         if (idUpdate && idUpdate.includes(data.data[index].id)) {
             updateStuff();
@@ -1060,7 +1060,7 @@ async function updateAPI(index) {
     if (bannerUpdate !== undefined && document.getElementById('counterBannerURL') && document.getElementById('counterBannerURL').value !== bannerUpdate) {
         document.getElementById('counterBannerURL').value = bannerUpdate;
     }
-    
+
 }
 
 async function updateAPINow(bypass = false) {
@@ -1708,7 +1708,7 @@ function enableViewCounterMode() {
             dislikesFooter: 'Dislikes',
             comments: true,
             commentsFooter: 'Comments'
-        }        
+        }
     }
 
     example_data = mergeWithExampleData(extraKeys, example_data);
@@ -1766,7 +1766,7 @@ function enableViewCounterMode() {
     }];
 
     apiTab.items.splice(26, 0, ...newAPIOptions);
-    
+
     // get rid of channel ID finder
     apiTab.items.splice(1, 1);
     apiTab.items[2].options[1][1] = 'mixerno.space (API views)'
@@ -1933,8 +1933,7 @@ function enableCreditsTab() {
             type: 'html',
             value: `<div>
                 <h3>Questions, bugs, comments, or suggestions?</h3>
-                <p>Read our <a href="/about/faq.html">website FAQ</a>.</p>
-                <p>You can also join the <a href="/about/discord.html">Livecountsedit Discord server</a>!</p>
+                <p>Read our <a href="${PULSE_SITE_ROOT}about/faq.html">website FAQ</a>.</p>
             </div>
             <hr>
             <div>
@@ -2026,7 +2025,7 @@ function updateGainTypes(max = 1) {
     for (j = 0; j < max; j++) {
         updateGainType(j);
     }
-} 
+}
 
 function regenerateDuplicatedID(item) {
     const itemIndex = parseInt(item.id.split('-')[2]);
@@ -2057,7 +2056,7 @@ function enableCompareMode() {
     };
 
     example_data = mergeWithExampleData(extraKeys, example_data);
-    
+
     const tab = MENU.tabs[0];
     tab.title = 'Left Counter';
     const duplicatedTab = {

@@ -97,7 +97,7 @@ function searchSettings(str) {
             let elem = label;
             while (elem) {
                 if (elem.classList.contains('no-search')) continue l;
-                elem = elem.parentElement; 
+                elem = elem.parentElement;
             }
             let hasInputChild = !!label.querySelectorAll("input,textarea,select").length;
             if (hasInputChild) {
@@ -302,7 +302,7 @@ async function initDB() {
         },
 
         blocked(current, blocked) {
-            alert('The database has been updated. Please close all other Livecountsedit tabs to continue.')
+            alert('The database has been updated. Please close all other PulseCount tabs to continue.')
         }
     })
     return db;
@@ -359,29 +359,8 @@ async function deleteDataInBrowser(table, index) {
 }
 
 function updateStreamerMode() {
-    if (data.streamerMode) {
-        document.getElementById("streamerModeB").innerText = "Disable Streamer Mode";
-        document.querySelectorAll('.streamer-mode').forEach(x => x.style.display = 'flex');
-    } else {
-        document.getElementById("streamerModeB").innerText = "Enable Streamer Mode";
-        document.querySelectorAll('.streamer-mode').forEach(x => x.style.display = 'none');
-    }
-}
-
-function toggleStreamerMode() {
-    if (!data.streamerMode) {
-        data.streamerMode = true;
-        updateStreamerMode();
-        alert('Streamer Mode enabled.')
-    } else {
-        if (confirm('Are you sure you want to disable Streamer Mode?')) {
-            data.streamerMode = false;
-            updateStreamerMode();
-            alert('Streamer Mode disabled.')
-        } else {
-            alert('Action cancelled.')
-        }
-    }
+    data.streamerMode = false;
+    document.querySelectorAll('.streamer-mode').forEach(x => x.style.display = 'none');
 }
 
 function randomGaussian(mean, stdev) {
@@ -647,14 +626,10 @@ function processData(dat) {
 
 function exportData(shouldAlert = true) {
     const data_ = processData(structuredClone(data));
-    
+
     if (shouldAlert) {
         if (!data_.partialExports || data_.partialExports.apiUpdates) {
             alert('NOTICE: API update settings are included in this export. Be careful not to share any sensitive data or credentials with people you don\'t trust!');
-        }
-
-        if (!data_.partialExports || data_.partialExports.streamSettings) {
-            alert('NOTICE: Stream settings are included in this save. This will include the code used for Nightbot commands, so DO NOT share if you ever plan on using Nightbot!')
         }
     }
     const jsonData = JSON.stringify(data_);
@@ -829,7 +804,7 @@ class Channel {
             /*
                 The number of update intervals in "gain per" is 1 / multiplier.
                 We want the standard deviation after this "gain per" duration to be std_gain.
-                Sum of n i.i.d. normal random variables with standard deviation 
+                Sum of n i.i.d. normal random variables with standard deviation
                 s / sqrt(n) or variance s^2 / n will have variance s^2 or standard deviation s.
             */
             return this.std_gain * Math.sqrt(multiplier);
@@ -837,7 +812,7 @@ class Channel {
             /*
                 For a custom distribution we use the statistical formula for variance:
                 variance = mean of X^2 - (mean of X)^2.
-                
+
                 The mean of X^2 for each piece is the second moment of the uniform distribution
                 From https://en.wikipedia.org/wiki/Continuous_uniform_distribution:
                 mean of X^2 = (b^3-a^3)/(3*(b-a))
@@ -869,9 +844,9 @@ class Channel {
     offlineGain(gainImmediately = true) {
         // Don't do offline gains if disabled or paused, or if the last saved time isn't set
         // or if API updates are enabled and force updated
-        if (data.pause || !data.offlineGains || typeof data.lastOnline !== 'number' 
+        if (data.pause || !data.offlineGains || typeof data.lastOnline !== 'number'
             || !isFinite(data.lastOnline) || (data.apiUpdates.enabled && data.apiUpdates.forceUpdates)) return;
-        
+
         let intervalsElapsed = (Date.now() - data.lastOnline) / data.updateInterval;
 
         // Subtract 1 if the counter gains immediately after adjusting for offline gains.
@@ -883,7 +858,7 @@ class Channel {
         if (data.debugMode) console.log('Intervals passed for offline gains: ' + intervalsElapsed)
 
         // The total gain will be approximately normally distributed
-        let gain = randomGaussian(this.getUnitMeanGain() * intervalsElapsed, 
+        let gain = randomGaussian(this.getUnitMeanGain() * intervalsElapsed,
             this.getUnitStDevGain() * Math.sqrt(intervalsElapsed));
 
         if (data.debugMode) console.log('Offline gains: ' + gain)
@@ -923,7 +898,7 @@ class Channel {
                     // Count increasing, API count is ahead
                     this.count = apiCount; // Jump to new milestone
                 } else if (abbAPICount < abb(this.count)) {
-                    // Count increasing, API count is behind (estimation is ahead)                    
+                    // Count increasing, API count is behind (estimation is ahead)
                     // Make sure overestimation leeway is between 0 and 100%
                     data.apiUpdates.leeway = clamp(data.apiUpdates.leeway, 0, 100)
                     let newCount = nextMilestone - (nextMilestone - abbAPICount) * data.apiUpdates.leeway / 100;
@@ -978,7 +953,7 @@ class Channel {
 }
 
 async function importData(imported) {
-    // v7 Livecountsedit and Livecounts.net saves
+    // v7 PulseCount and Livecounts.net saves
     if (typeof imported.saveType === 'number') {
         try {
             imported = convert_lcedit_7_0_to_top_50(imported);
@@ -988,7 +963,7 @@ async function importData(imported) {
             console.error(err);
             imported = {};
         }
-        //return alert('Saves from v7 Livecountsedit and Livecounts.net themes are not supported yet.')
+        //return alert('Saves from v7 PulseCount and Livecounts.net themes are not supported yet.')
     } else if ('graphDates' in imported && Array.isArray(imported.graphDates)) {
         // YT Studio saves
         try {
@@ -1033,7 +1008,7 @@ async function importData(imported) {
 
 function saveAPISettings(shouldAlert = false) {
     // for compatibility with top 50. do not delete
-} 
+}
 
 // needs to be implemented by individual counters
 async function processImport(imported) {
@@ -1043,7 +1018,7 @@ async function processImport(imported) {
 function promptOBSMode() {
     const dialog = document.createElement('dialog');
     const div = document.createElement('div');
-    div.innerHTML = 'Are you sure you want to enable OBS Browser Mode?<br>You cannot disable this without refreshing.<br>Be sure to read our <a href="https://github.com/livecountsedit/livecountsedit.github.io/wiki/OBS-Browser-Tutorial">OBS Browser tutorial</a> first to make sure you know what you\'re doing!'
+    div.innerHTML = 'Are you sure you want to enable OBS Browser Mode?<br>You cannot disable this without refreshing.<br>Be sure to read our <a href="https://github.com/contatesteparawebsites-commits/livecountsremaked/wiki/OBS-Browser-Tutorial">OBS Browser tutorial</a> first to make sure you know what you\'re doing!'
     div.style.maxWidth = '500px';
     const buttonsDiv = document.createElement('div');
     buttonsDiv.style.textAlign = 'center';
@@ -1070,8 +1045,8 @@ function promptOBSMode() {
 }
 
 function enableOBSMode() {
-    document.getElementById('obsModeB').disabled = true;
-    document.getElementById('obsModeB').innerText = 'OBS Browser Mode Enabled';
+    const obsButton = document.getElementById('obsModeB');
+    if (obsButton) { obsButton.disabled = true; obsButton.innerText = 'OBS Browser Mode Enabled'; }
     // disable OBS browser-incompatible prompts
     window.alert = function () {};
     window.confirm = function () { return true; };
@@ -1088,7 +1063,7 @@ function obsImport() {
 function obsExport() {
     try {
         navigator.clipboard.writeText(JSON.stringify(data));
-        showDialog('Data copied to clipboard.<br>Be sure to read our <a href="https://github.com/livecountsedit/livecountsedit.github.io/wiki/OBS-Browser-Tutorial">OBS Browser tutorial</a> so you know how to get the data out of the browser source!')
+        showDialog('Data copied to clipboard.<br>Be sure to read our <a href="https://github.com/contatesteparawebsites-commits/livecountsremaked/wiki/OBS-Browser-Tutorial">OBS Browser tutorial</a> so you know how to get the data out of the browser source!')
     } catch (err) {
         showDialog('An error occurred while trying to expordet data :(')
         console.error(err);
@@ -1169,7 +1144,7 @@ function formatNumber(num, options) {
 }
 
 function updateOdo() {
-    
+
     odometers = Odometer.init();
 
     for (const odometer of odometers) {
