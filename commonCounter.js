@@ -1250,7 +1250,9 @@ function updateCounters2() {
 function refreshCount() {
     const countInputs = document.querySelectorAll('.count-input');
     for (i = 0; i < countInputs.length; i++) {
-        countInputs[i].value = data.editorShowsExactCount ? data.data[i].count : data.data[i].getDisplayedCount(i);
+        const channel = data.data[i];
+        if (!channel) continue;
+        countInputs[i].value = data.editorShowsExactCount ? channel.count : channel.getDisplayedCount(i);
     }
 }
 

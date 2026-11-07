@@ -68,7 +68,8 @@
             const update = () => {
                 const currentName = name.textContent.trim() || name.value || 'User';
                 const isDefault = !avatar.getAttribute('src') || /(default\.png|default_thumbnail\.jpg|logo\.png|blank\.png)$/.test(avatar.src) || avatar.dataset.pulseGenerated === 'true';
-                if (!isDefault || avatar.dataset.pulseAvatarFor === currentName) return;
+                const generatedForSameName = avatar.dataset.pulseGenerated === 'true' && avatar.dataset.pulseAvatarFor === currentName && avatar.src.startsWith('data:image/svg+xml');
+                if (!isDefault || generatedForSameName) return;
                 avatar.dataset.pulseGenerated = 'true';
                 avatar.dataset.pulseAvatarFor = currentName;
                 avatar.src = window.pulseInitialAvatar(currentName);
