@@ -185,7 +185,7 @@ let example_data = {
     'useOdometerColors': true,
     'maxChartValues': 50,
     'numberFormat': 'comma',
-    'animationType': 'default',
+    'animationType': 'minimal',
     'reverseAnimation': false,
     'saveType': COUNTER_THEME,
     'index': 1,
@@ -255,6 +255,7 @@ async function initLoad(redo, previousTheme) {
             }
 
             data = mergeWithExampleData(storedData, example_data);
+            if (data.animationType === 'default') data.animationType = 'minimal';
             data.data = data.data.map(x => new Channel(x));
             data.saveType = COUNTER_THEME;
             data.versionLastOpened = VERSION;
@@ -1015,12 +1016,13 @@ function update(doGains = true) {
                 }
             }
             if (data.data.length > 1) {
-                if (getGain(data.data[i].id) >= fastestCount) {
-                    fastestCount = getGain(data.data[i].id);
+                const observedGain = getGain(data.data[i].id);
+                if (observedGain >= fastestCount) {
+                    fastestCount = observedGain;
                     fastest = data.data[i].id;
                 }
-                if (getGain(data.data[i].id) < slowestCount) {
-                    slowestCount = getGain(data.data[i].id);
+                if (observedGain < slowestCount) {
+                    slowestCount = observedGain;
                     slowest = data.data[i].id;
                 }
             }
@@ -1075,6 +1077,9 @@ function update(doGains = true) {
                 }
             }
         }
+        if (data.intervalCount % data.fireIcons.intervalsPerUpdate === 0) {
+            calculateFires();
+        }
         for (let i = 0; i < data.max; i++) {
             glowingCards = [];
             let extraTimeTillUpdate = 0;
@@ -1086,15 +1091,19 @@ function update(doGains = true) {
                 extraTimeTillUpdate = i * 100;
             }
 
-            if (data.intervalCount % data.fireIcons.intervalsPerUpdate === 0) {
-                calculateFires();
-            }
-            setTimeout(function () {
+            const renderCard = function () {
                 num = formatRank(i + 1);
                 const currentCard = document.getElementsByClassName("card")[i];
                 if (currentCard) {
+                    const cardElements = currentCard._pulseElements || (currentCard._pulseElements = {
+                        rank: currentCard.querySelector('.num'), rankText: currentCard.querySelector('.num_text'),
+                        image: currentCard.querySelector('.image'), name: currentCard.querySelector('.name'),
+                        count: currentCard.querySelector('.count'), subgap: currentCard.querySelector('.subgap'),
+                        gapImage: currentCard.querySelector('.gapimg'), differenceLine: currentCard.querySelector('.difference_line'),
+                        differenceText: currentCard.querySelector('.subgap .text'), differenceCount: currentCard.querySelector('.subgap .odometer')
+                    });
                     if (data.animatedCards.enabled) {
-                        num = currentCard.querySelector(".num_text").innerText
+                        num = cardElements.rankText.innerText
                     }
                     if (data.data[i]) {
                         if (!data.data[i].image) {
@@ -1107,24 +1116,22 @@ function update(doGains = true) {
                             currentCard.style.backgroundColor = data.boxColor;
                         }
                         currentCard.id = "card_" + data.data[i].id
-                        currentCard.querySelector(".num").id = "num_" + data.data[i].id
+                        cardElements.rank.id = "num_" + data.data[i].id
 
-                        const absoluteUrl = new URL(data.data[i].image, window.location.href).href;
-
-                        if (!(currentCard.querySelector(".image").src === absoluteUrl)) {
-                            currentCard.querySelector(".image").src = data.data[i].image;
+                        if (cardElements.image.getAttribute('src') !== data.data[i].image) {
+                            cardElements.image.src = data.data[i].image;
                         }
 
-                        currentCard.querySelector(".image").id = "image_" + data.data[i].id
+                        cardElements.image.id = "image_" + data.data[i].id
 
-                        currentCard.querySelector(".name").innerText = data.data[i].name
-                        currentCard.querySelector(".name").id = "name_" + data.data[i].id
+                        if (cardElements.name.textContent !== data.data[i].name) cardElements.name.textContent = data.data[i].name
+                        cardElements.name.id = "name_" + data.data[i].id
 
-                        currentCard.querySelector(".count").id = "count_" + data.data[i].id
-                        currentCard.querySelector(".count").innerText = getDisplayedCount(data.data[i].count)
+                        cardElements.count.id = "count_" + data.data[i].id
+                        cardElements.count.innerText = getDisplayedCount(data.data[i].count)
                         currentCard.setAttribute('data-count', data.data[i].count)
                         //HERE
-                        if (data.data[i + 1]) {
+                        if (data.data[i + 1] && data.differenceStyles.created.length > 0) {
                             const topGainSet = getSetGain(data.data[i]);
                             const bottomGainSet = getSetGain(data.data[i+1]);
                             const topGainObserved = getGain(data.data[i].id);
@@ -1177,18 +1184,18 @@ function update(doGains = true) {
                                     effectDisplayed = true;
                                     let thisCardGlows = false;
                                     let nextCardGlows = false;
-                                    currentCard.querySelector(".subgap").style.color = diffEffect.color;
+                                    cardElements.subgap.style.color = diffEffect.color;
                                     if (diffEffect.icon) {
-                                        currentCard.querySelector(".gapimg").src = diffEffect.icon;
-                                        currentCard.querySelector(".gapimg").style.visibility = 'visible';
-                                        currentCard.querySelector(".gapimg").style.animation = diffEffect.iconShaking ? "shake 1s infinite" : "";
+                                        cardElements.gapImage.src = diffEffect.icon;
+                                        cardElements.gapImage.style.visibility = 'visible';
+                                        cardElements.gapImage.style.animation = diffEffect.iconShaking ? "shake 1s infinite" : "";
                                     } else {
-                                        currentCard.querySelector(".gapimg").style.visibility = 'hidden';
+                                        cardElements.gapImage.style.visibility = 'hidden';
                                     }
-                                    currentCard.querySelector(".subgap").querySelector(".text").innerText = abbs(getDisplayedCount(data.data[i].count) - getDisplayedCount(data.data[i + 1].count));
-                                    currentCard.querySelector(".subgap").querySelector(".odometer").innerText = getDisplayedCount(data.data[i].count) - getDisplayedCount(data.data[i + 1].count)
-                                    currentCard.querySelector(".subgap").style.visibility = 'visible';
-                                    currentCard.querySelector(".difference_line").style.visibility = 'visible';
+                                    cardElements.differenceText.innerText = abbs(getDisplayedCount(data.data[i].count) - getDisplayedCount(data.data[i + 1].count));
+                                    cardElements.differenceCount.innerText = getDisplayedCount(data.data[i].count) - getDisplayedCount(data.data[i + 1].count)
+                                    cardElements.subgap.style.visibility = 'visible';
+                                    cardElements.differenceLine.style.visibility = 'visible';
 
                                     switch (diffEffect.glow) {
                                         case 'bottom':
@@ -1230,15 +1237,15 @@ function update(doGains = true) {
                             }
 
                             if (!effectDisplayed) {
-                                currentCard.querySelector(".gapimg").style.visibility = 'hidden';
-                                currentCard.querySelector(".subgap").style.visibility = 'hidden';
-                                currentCard.querySelector(".difference_line").style.visibility = 'hidden';
+                                cardElements.gapImage.style.visibility = 'hidden';
+                                cardElements.subgap.style.visibility = 'hidden';
+                                cardElements.differenceLine.style.visibility = 'hidden';
                             }
 
                         } else {
-                            currentCard.querySelector(".gapimg").style.visibility = 'hidden';
-                            currentCard.querySelector(".subgap").style.visibility = 'hidden';
-                            currentCard.querySelector(".difference_line").style.visibility = 'hidden';
+                            cardElements.gapImage.style.visibility = 'hidden';
+                            cardElements.subgap.style.visibility = 'hidden';
+                            cardElements.differenceLine.style.visibility = 'hidden';
                         }
 
                         if (glowingCards[i]) {
@@ -1282,36 +1289,38 @@ function update(doGains = true) {
                     } else {
                         const id = currentCard.id;
                         currentCard.id = 'card_'
-                        currentCard.querySelector(".num").id = "num_"
-                        currentCard.querySelector(".image").id = "image_"
-                        if (currentCard.querySelector(".image").src !== BLANK_IMAGE_URL) {
-                            currentCard.querySelector(".image").src = BLANK_IMAGE_URL
+                        cardElements.rank.id = "num_"
+                        cardElements.image.id = "image_"
+                        if (cardElements.image.src !== BLANK_IMAGE_URL) {
+                            cardElements.image.src = BLANK_IMAGE_URL
                         }
-                        currentCard.querySelector(".name").id = "name_"
-                        currentCard.querySelector(".name").innerText = ZERO_WIDTH_SPACE
-                        currentCard.querySelector(".count").id = "count_"
-                        currentCard.querySelector(".count").innerText = '0'
-                        currentCard.querySelector(".subgap").querySelector(".odometer").innerText = 0;
-                        currentCard.querySelector(".subgap").querySelector(".text").innerText = 0;
-                        currentCard.querySelector(".num").innerHTML = `<div class="num_text">${num}</div>`;
-                        currentCard.querySelector(".num").style.backgroundImage = `url('')`;
-                        currentCard.querySelector(".num").style.color = data.textColor;
-                        currentCard.querySelector(".num_text").style.marginTop = "";
-                        currentCard.querySelector(".num_text").style.marginLeft = "";
+                        cardElements.name.id = "name_"
+                        cardElements.name.innerText = ZERO_WIDTH_SPACE
+                        cardElements.count.id = "count_"
+                        cardElements.count.innerText = '0'
+                        cardElements.differenceCount.innerText = 0;
+                        cardElements.differenceText.innerText = 0;
+                        cardElements.rank.innerHTML = `<div class="num_text">${num}</div>`;
+                        cardElements.rank.style.backgroundImage = `url('')`;
+                        cardElements.rank.style.color = data.textColor;
+                        cardElements.rankText.style.marginTop = "";
+                        cardElements.rankText.style.marginLeft = "";
                         if (charts[id]) {
                             charts[id].destroy();
                             delete charts[id];
                         }
                         currentCard.querySelector(".chart").id = "chart_";
                         applyFire(currentCard, i, false);
-                        currentCard.querySelector(".gapimg").style.visibility = 'hidden';
-                        currentCard.querySelector(".subgap").style.visibility = 'hidden';
-                        currentCard.querySelector(".difference_line").style.visibility = 'hidden';
+                        cardElements.gapImage.style.visibility = 'hidden';
+                        cardElements.subgap.style.visibility = 'hidden';
+                        cardElements.differenceLine.style.visibility = 'hidden';
                         currentCard.style.backgroundColor = data.boxColor;
                         currentCard.classList.remove("glowing");
                     }
                 }
-            }, extraTimeTillUpdate);
+            };
+            if (extraTimeTillUpdate > 0) setTimeout(renderCard, extraTimeTillUpdate);
+            else renderCard();
         }
 
         if (data.animatedCards.enabled) {

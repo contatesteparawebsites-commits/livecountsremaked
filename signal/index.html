@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Signal Board — PulseCount</title>
+    <meta name="description" content="A technical subscriber counter with a built-in signal history.">
+    <link rel="icon" href="../logo.svg" type="image/svg+xml"><link rel="stylesheet" href="../polish.css"><link rel="stylesheet" href="index.css">
+</head>
+<body data-counter-id="signal" data-default-name="Signal North" data-default-count="742050" data-default-gain="7" data-default-interval="2000">
+    <main class="signal-console">
+        <header class="console-header"><span>PC_SIGNAL // LIVE FEED</span><span>CH. 001&nbsp;&nbsp; <b id="statusLabel">LIVE</b></span></header>
+        <section class="channel-strip"><img id="counter-avatar" src="../default.png" alt="Channel avatar"><div><small>ACTIVE CHANNEL</small><h1 id="counter-title">Signal North</h1></div><span class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></section>
+        <section class="readout"><span class="readout-label">TOTAL SUBSCRIBERS</span><div id="counter-count" class="signal-count">742,050</div><div class="readout-footer"><span id="gainDisplay">+7 / update</span><span>SIMULATED INPUT</span></div></section>
+        <section class="history-panel"><div class="panel-title"><span>SIGNAL HISTORY</span><span>LAST 24 UPDATES</span></div><svg viewBox="0 0 300 64" preserveAspectRatio="none" aria-label="Recent subscriber count history"><path d="M0 8H300M0 32H300M0 56H300"/><polyline id="signalHistory" points="0,58"/></svg></section>
+        <details class="console-settings"><summary>[ OPEN CONTROL PANEL ]</summary><div class="settings-grid">
+            <label>CHANNEL<input id="channelName" type="text" maxlength="80"></label><label>COUNT<input id="startCount" type="number"></label><label>GAIN<input id="gainRate" type="number"></label><label>INTERVAL / MS<input id="updateRate" type="number" min="250" step="250"></label>
+        </div><div class="settings-actions"><button id="pauseCounter">Pause counter</button><button id="resetCounter">Reset</button></div></details>
+    </main>
+    <script src="../polish.js"></script><script src="../new-counters/counter.js"></script>
+</body>
+</html>
