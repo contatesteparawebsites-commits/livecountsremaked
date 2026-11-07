@@ -13,16 +13,6 @@ A customizable collection of subscriber counters, view counters, comparisons, an
 - An editable Top 50 with a current starting list and lightweight two-second simulations
 - Local browser saves, import/export tools, themes, custom rates, and fullscreen viewing
 
-## Run locally
-
-This is a static website. Serve the repository with any static HTTP server, for example:
-
-```bash
-python3 -m http.server 8000
-```
-
-Then open `http://localhost:8000`.
-
 ## Data and privacy
 
 Counter configurations are stored locally in your browser. No account is required. The Top 50 starting values are editable snapshots and are not presented as live YouTube API data.
