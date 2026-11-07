@@ -76,12 +76,12 @@ let example_data = {
         "showChart": false,
         "chartLineColor": "#000000",
     },
-    "bgColor": "#141414",
-    "textColor": "#000",
-    "boxColor": "#f7f5fe",
-    "boxBorder": "#FFF",
-    "imageBorder": "0",
-    "boxBorderRadius": "0",
+    "bgColor": "#090b12",
+    "textColor": "#e9ecf5",
+    "boxColor": "#121724",
+    "boxBorder": "#283149",
+    "imageBorder": "50",
+    "boxBorderRadius": "28",
     "imageBorderColor": "#000",
     "prependZeros": false,
     "boxSpacing": 0.2,
@@ -93,10 +93,10 @@ let example_data = {
     'odometerUp': 'null',
     'odometerDown': 'null',
     'odometerSpeed': 2,
-    'theme': 'top50',
+    'theme': 'top50H',
     "sort": "num",
     "order": "desc",
-    "data": [],
+    "data": getTop50Channels(),
     "gain_min": -10000,
     "gain_max": 10000,
     "updateInterval": 2000,
@@ -218,7 +218,7 @@ let example_data = {
 let updateInterval;
 let apiInterval;
 
-initLoad()
+initLoad().then(() => setupChannelSuggestions());
 async function initLoad(redo, previousTheme) {
     let storedData;
 
@@ -574,6 +574,17 @@ function setupDesign(redo) {
         image.src = channels[dataIndex] ? (channels[dataIndex].image || DEFAULT_AVATAR) : '../blank.png';
         image.id = `image_${cid}`;
         image.className = 'image';
+        image.alt = channels[dataIndex] ? `Avatar de ${channels[dataIndex].name}` : '';
+        image.loading = 'lazy';
+        image.onerror = () => {
+            image.onerror = null;
+            if (channels[dataIndex]) {
+                channels[dataIndex].image = channelAvatar({ ...channels[dataIndex], rank: dataIndex + 1 });
+                image.src = channels[dataIndex].image;
+            } else {
+                image.src = DEFAULT_AVATAR;
+            }
+        };
 
         const nameCountDiv = document.createElement('div');
         const nameDiv = document.createElement('div');
@@ -3112,13 +3123,13 @@ function loadAPIUpdates() {
 }
 
 function selectorFunction(e) {
+    if (e.__livecountsSelectionHandled) return;
+    e.__livecountsSelectionHandled = true;
     let target = e.target;
-    if (quickSelecting || pickingChannels) {
-        while (target && !target.id?.startsWith('card_') && target.nodeName !== 'BODY') {
-            target = target.parentElement
-        }
-        if (!target) return;
+    while (target?.nodeType && !target.id?.startsWith('card_') && target.id !== 'main' && target.nodeName !== 'BODY') {
+        target = target.parentElement;
     }
+    if (!target || target.id === 'main') return;
     let id = target.id?.split('_').slice(1).join('_')
     if (pickingChannels) {
         if (specificChannels.includes(id)) {
@@ -5267,6 +5278,9 @@ document.getElementById("edit_min_gain").addEventListener('input', updateEditHou
 document.getElementById("edit_max_gain").addEventListener('input', updateEditHourlyEstimates);
 document.getElementById("edit_mean_gain").addEventListener('input', updateEditHourlyEstimates);
 document.getElementById("edit_std_gain").addEventListener('input', updateEditHourlyEstimates);
+
+// A single click selects a channel and fills the existing editor below.
+document.getElementById('main').addEventListener('click', selectorFunction);
 
 function updateScrollbars() {
     if (data.showScrollbars === false) {
