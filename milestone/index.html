@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Goal Tracker — PulseCount</title>
+    <meta name="description" content="A subscriber counter focused on the next channel milestone.">
+    <link rel="icon" href="../logo.svg" type="image/svg+xml"><link rel="stylesheet" href="../polish.css"><link rel="stylesheet" href="index.css">
+</head>
+<body data-counter-id="milestone" data-default-name="Next Chapter" data-default-count="86420" data-default-gain="5" data-default-interval="2000" data-default-goal="100000">
+    <main class="goal-page">
+        <section class="goal-card">
+            <header><span class="goal-kicker">THE NEXT MILESTONE</span><span id="statusLabel" class="goal-status">LIVE</span></header>
+            <div class="goal-channel"><img id="counter-avatar" src="../default.png" alt="Channel avatar"><h1 id="counter-title">Next Chapter</h1></div>
+            <div class="goal-numbers"><div><span class="number-label">RIGHT NOW</span><div id="counter-count" class="goal-count">86,420</div></div><div class="goal-target"><span class="number-label">WORKING TOWARD</span><strong id="goalTarget">100,000</strong></div></div>
+            <div class="progress-track" role="progressbar" aria-label="Goal progress"><div id="goalProgress"></div></div>
+            <div class="progress-meta"><span id="goalProgressLabel">86.4% of 100,000</span><span id="goalRemaining">13,580 remaining</span></div>
+            <footer><span id="gainDisplay">+5 / update</span><span>ONE STEP CLOSER.</span></footer>
+        </section>
+        <details class="goal-settings"><summary>Set your goal</summary><div class="settings-grid">
+            <label>Channel name<input id="channelName" type="text" maxlength="80"></label><label>Current count<input id="startCount" type="number"></label><label>Subscriber goal<input id="goalCount" type="number" min="1"></label><label>Gain per update<input id="gainRate" type="number"></label><label>Interval (ms)<input id="updateRate" type="number" min="250" step="250"></label>
+        </div><div class="settings-actions"><button id="pauseCounter">Pause counter</button><button id="resetCounter">Reset</button></div></details>
+    </main>
+    <script src="../polish.js"></script><script src="../new-counters/counter.js"></script>
+</body>
+</html>

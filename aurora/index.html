@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Aurora Live — PulseCount</title>
+    <meta name="description" content="A quiet, minimal subscriber counter with a soft aurora background.">
+    <link rel="icon" href="../logo.svg" type="image/svg+xml"><link rel="stylesheet" href="../polish.css"><link rel="stylesheet" href="index.css">
+</head>
+<body data-counter-id="aurora" data-default-name="Aurora Studio" data-default-count="128400" data-default-gain="3" data-default-interval="2000">
+    <main class="aurora-stage">
+        <div class="aurora-orb orb-one"></div><div class="aurora-orb orb-two"></div>
+        <section class="live-card" aria-label="Aurora live subscriber counter">
+            <div class="live-meta"><span class="aurora-wordmark">AURORA / 01</span><span id="statusLabel" class="status">LIVE</span></div>
+            <div class="channel"><img id="counter-avatar" src="../default.png" alt="Channel avatar"><h1 id="counter-title">Aurora Studio</h1></div>
+            <div id="counter-count" class="big-count">128,400</div>
+            <div class="count-caption"><span>SUBSCRIBERS</span><span id="gainDisplay">+3 / update</span></div>
+        </section>
+        <details class="counter-settings">
+            <summary>Customize counter</summary>
+            <div class="settings-grid">
+                <label>Channel name<input id="channelName" type="text" maxlength="80"></label>
+                <label>Current count<input id="startCount" type="number"></label>
+                <label>Gain per update<input id="gainRate" type="number"></label>
+                <label>Interval (ms)<input id="updateRate" type="number" min="250" step="250"></label>
+            </div>
+            <div class="settings-actions"><button id="pauseCounter">Pause counter</button><button id="resetCounter">Reset</button></div>
+        </details>
+    </main>
+    <script src="../polish.js"></script><script src="../new-counters/counter.js"></script>
+</body>
+</html>

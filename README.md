@@ -11,6 +11,7 @@ A customizable collection of subscriber counters, view counters, comparisons, an
 - PulseCount subscriber, video, and comparison counters
 - Livecounts.net, SocialBlade, Akshatmittal, and YouTube Studio inspired layouts
 - An editable Top 50 with a current starting list and lightweight two-second simulations
+- Three original layouts: Aurora Live, Signal Board, and Goal Tracker
 - Local browser saves, import/export tools, themes, custom rates, and fullscreen viewing
 
 ## Data and privacy

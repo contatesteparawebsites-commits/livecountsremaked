@@ -114,6 +114,9 @@ main { max-width: 1160px; margin: auto; padding: 0 28px; }
 .counter-links a:hover .arrow { color: var(--accent); }
 .top-counter { border-color: var(--line-strong); background: linear-gradient(135deg, var(--surface), var(--accent-soft)); }
 .group-note { margin: 18px 8px 0; }
+.exclusive-counter { grid-column: 1 / -1; }
+.exclusive-counter .counter-links { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.exclusive-counter .counter-links a { margin: 0; border-color: var(--line); background: var(--surface-soft); }
 
 footer { max-width: 1104px; margin: auto; padding: 25px 0 35px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; color: var(--subtle); font-size: 11px; }
 footer > span { color: var(--muted); font-weight: 700; }
@@ -142,6 +145,8 @@ footer button:hover { color: #e05252; }
     .intro { padding: 48px 0 36px; }
     .counter-directory { grid-template-columns: 1fr; }
     .counter-group.featured { grid-row: auto; }
+    .exclusive-counter { grid-column: auto; }
+    .exclusive-counter .counter-links { grid-template-columns: 1fr; }
     footer { margin: 0 20px; }
 }
 @media (max-width: 420px) {
